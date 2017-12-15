@@ -1,0 +1,7 @@
+include ':app'
+
+include 'binding-collection-adapter-master'
+project(':binding-collection-adapter-master').projectDir = file('/binding-collection-adapter-master/app')
+
+include 'bindingcollectionadapter'
+project(':bindingcollectionadapter').projectDir = file('/binding-collection-adapter-master/bindingcollectionadapter')
