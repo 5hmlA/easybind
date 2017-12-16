@@ -18,6 +18,7 @@ import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
  */
 public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
 
+    private static final String TAG = LoadMoreWrapperAdapter.class.getSimpleName();
     private OnLoadmoreControl mLoadmoreControl;
     private boolean mInLoadingState;
 
@@ -139,7 +140,6 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
         }
     }
 
-    public final static String TAG = LoadMoreWrapperAdapter.class.getSimpleName();
     public RecyclerView mRecyclerView;
     public int mLastCheckDataSize;
 
@@ -173,6 +173,7 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
             public void onItemRangeInserted(int positionStart, int itemCount){
                 mInLoadingState = false;
                 mLoadmoreControl.loadmoreSucceed();//上拉加载成功
+                LOG(TAG,"数据变化 观察者  onItemRangeInserted --> finished?",mLoadmoreControl.loadmoreFinished);
                 super.onItemRangeInserted(positionStart, itemCount);
             }
 

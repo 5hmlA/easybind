@@ -36,18 +36,10 @@ dependencies {
     implementation deps.support.app_compat
     implementation deps.support.recyclerview
     implementation deps.support.v4
-    implementation deps.support.app_compat
     implementation deps.support.design
-
     implementation deps.lifecycle.runtime
     implementation deps.lifecycle.extensions
     annotationProcessor deps.lifecycle.compiler
-    implementation deps.room.runtime
-    annotationProcessor deps.room.compiler
-//    compile "android.arch.lifecycle:runtime:1.0.0-alpha3"
-//    compile "android.arch.lifecycle:extensions:1.0.0-alpha3"
-//    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha3"
-
-    compile project(':bindingcollectionadapter')
-//    compile project(':bindingcollectionadapter-recyclerview')
+    implementation project(':bindingcollectionadapter')
+    compile project(path: ':bindingstar')
 }

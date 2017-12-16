@@ -19,6 +19,8 @@ import me.tatarka.bindingcollectionadapter2.view_adapter.BindingRecyclerViewAdap
 import me.tatarka.bindingcollectionadapter2.view_adapter.BindingViewPagerAdapter;
 import me.tatarka.bindingcollectionadapter2.view_adapter.LoadMoreWrapperAdapter;
 
+import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
+
 /**
  * All the BindingAdapters so that you can set your adapters and mDataLists directly in your layout.
  */
@@ -26,9 +28,8 @@ public class BindingCollectionAdapters {
     // AdapterView
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = {"itemBinding", "itemTypeCount", "dataList", "adapter", "itemDropDownLayout", "itemIds", "itemIsEnabled"}, requireAll = false)
-    public static <T> void setAdapter(AdapterView adapterView, ItemBinding<T> itemBinding, Integer itemTypeCount, List items, BindingListViewAdapter<T> adapter,
-                                      @LayoutRes
-                                              int itemDropDownLayout, BindingListViewAdapter.ItemIds<? super T> itemIds, BindingListViewAdapter.ItemIsEnabled<? super T> itemIsEnabled){
+    public static <T> void setAdapter(AdapterView adapterView, ItemBinding<T> itemBinding, Integer itemTypeCount, List items, BindingListViewAdapter<T> adapter, @LayoutRes
+            int itemDropDownLayout, BindingListViewAdapter.ItemIds<? super T> itemIds, BindingListViewAdapter.ItemIsEnabled<? super T> itemIsEnabled){
         if(itemBinding == null) {
             throw new IllegalArgumentException("updateItemLayoutRes must not be null");
         }
@@ -58,8 +59,7 @@ public class BindingCollectionAdapters {
      * android.widget.HeaderViewListAdapter}.
      */
     private static Adapter unwrapAdapter(Adapter adapter){
-        return adapter instanceof WrapperListAdapter ? unwrapAdapter(
-                ( (WrapperListAdapter)adapter ).getWrappedAdapter()) : adapter;
+        return adapter instanceof WrapperListAdapter ? unwrapAdapter(( (WrapperListAdapter)adapter ).getWrappedAdapter()) : adapter;
     }
 
 
@@ -103,12 +103,12 @@ public class BindingCollectionAdapters {
     //=============================  recyeleView  ============================================
     // RecyclerView
     @SuppressWarnings("unchecked")
-    @BindingAdapter(value = {"itemBinding", "dataList", "adapter", "itemIds", "viewHolder", "loadmoreControl"},
-                    requireAll = false)
-    public static <T> void setAdapter(RecyclerView recyclerView, ItemBinding<T> itemBinding, List<T> items, BindingRecyclerViewAdapter<T> adapter, BindingRecyclerViewAdapter.ItemIds<? super T> itemIds, BindingRecyclerViewAdapter.ViewHolderFactory viewHolderFactory, LoadMoreWrapperAdapter.OnLoadmoreControl loadmoreControl){
+    @BindingAdapter(value = {"layoutManager", "itemBinding", "dataList", "adapter", "itemIds", "viewHolder", "loadmoreControl"}, requireAll = false)
+    public static <T> void setAdapter(RecyclerView recyclerView, LayoutManagers.LayoutManagerFactory layoutManagerFactory, ItemBinding<T> itemBinding, List<T> items, BindingRecyclerViewAdapter<T> adapter, BindingRecyclerViewAdapter.ItemIds<? super T> itemIds, BindingRecyclerViewAdapter.ViewHolderFactory viewHolderFactory, LoadMoreWrapperAdapter.OnLoadmoreControl loadmoreControl){
         if(itemBinding == null) {
             throw new IllegalArgumentException("itemBinding must not be null");
         }
+
         BindingRecyclerViewAdapter oldAdapter = (BindingRecyclerViewAdapter)recyclerView.getAdapter();
         if(adapter == null) {
             if(oldAdapter == null) {
@@ -121,6 +121,16 @@ public class BindingCollectionAdapters {
                 adapter = oldAdapter;
             }
         }
+        if(layoutManagerFactory != null) {
+            //note 该方法会被多次调用
+            if(recyclerView.getLayoutManager() == null) {
+                RecyclerView.LayoutManager layoutManager = layoutManagerFactory.create(recyclerView);
+                recyclerView.setLayoutManager(layoutManager);
+                adapter.configLayoutManager(layoutManager);
+            }
+        }else {
+            LOG("LayoutManager 为空,请在布局配置 layoutManager熟悉");
+        }
         adapter.setItemBinding(itemBinding);
         adapter.setItems(items);
         adapter.setItemIds(itemIds);
@@ -130,11 +140,6 @@ public class BindingCollectionAdapters {
         }
     }
 
-
-    @BindingAdapter("layoutManager")
-    public static void setLayoutManager(RecyclerView recyclerView, LayoutManagers.LayoutManagerFactory layoutManagerFactory){
-        recyclerView.setLayoutManager(layoutManagerFactory.create(recyclerView));
-    }
 
     @BindingAdapter("paddingLR")
     public static void setPaddingLeft(View view, float padding){

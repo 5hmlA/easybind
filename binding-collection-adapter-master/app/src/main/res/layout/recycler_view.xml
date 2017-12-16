@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/tools">
 
     <data>
 
         <import type="me.tatarka.bindingcollectionadapter.sample.ItemViewModel" />
 
         <variable
-            name="viewModel"
+            name="recViewModel"
             type="me.tatarka.bindingcollectionadapter.sample.RecycleViewModel" />
 
         <variable
@@ -22,23 +23,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            layout="@layout/common_recycler_view"
-            app:recViewModel="@{viewModel}"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+        <!--<include-->
+            <!--layout="@layout/common_recycler_view"-->
+            <!--app:recViewModel="@{viewModel}"/>-->
 
-        <!--<android.support.v7.widget.RecyclerView-->
-            <!--android:id="@+id/list"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="1"-->
-            <!--app:loadmoreControl="@{viewModel.loadmoreListener}"-->
-            <!--app:itemBinding="@{viewModel.multipleItems}"-->
-            <!--app:items="@{viewModel.headerFooterItems}"-->
-            <!--app:viewHolder="@{viewModel.viewHolder}"-->
-            <!--app:layoutManager="@{LayoutManagers.linear()}" />-->
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            bind:loadmoreControl="@{recViewModel.mLoadmoreControl}"
+            bind:itemBinding="@{recViewModel.multipleItems}"
+            bind:dataList="@{recViewModel.godLists}"
+            bind:layoutManager="@{recViewModel.layoutManager}" />
 
         <LinearLayout
             style="?buttonBarStyle"

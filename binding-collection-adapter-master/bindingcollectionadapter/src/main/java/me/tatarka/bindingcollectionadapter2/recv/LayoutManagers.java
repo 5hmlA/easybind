@@ -14,6 +14,12 @@ import java.lang.annotation.RetentionPolicy;
  * in your layout.
  */
 public class LayoutManagers {
+    /**
+     * 标记 为 横向 填充
+     */
+    public interface FullSpan {}
+
+
     protected LayoutManagers() {
     }
 

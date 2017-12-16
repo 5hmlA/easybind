@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply from: 'D:/0_0DevTools/workspace/versions.gradle'
-//apply from: 'https://raw.githubusercontent.com/ZuYun/workspace/master/versions.gradle'
+//apply from: 'D:/0_0DevTools/workspace/versions.gradle'
+apply from: 'https://raw.githubusercontent.com/ZuYun/workspace/master/versions.gradle'
 
 buildscript {
     ext.kotlin_version = '1.1.51'

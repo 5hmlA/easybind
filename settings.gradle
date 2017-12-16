@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':bindingstar'
 
 include 'binding-collection-adapter-master'
 project(':binding-collection-adapter-master').projectDir = file('/binding-collection-adapter-master/app')
