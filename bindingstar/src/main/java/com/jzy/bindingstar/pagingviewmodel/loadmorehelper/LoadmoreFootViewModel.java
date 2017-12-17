@@ -17,7 +17,7 @@ import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
  * @date 2017/12/15.
  */
 public class LoadmoreFootViewModel extends ExtrasBindViewModel implements LayoutManagers.FullSpan {
-    public static final int layoutRes = R.layout.loadmore_holder;
+    public static final int layoutRes = R.layout.jfoot_loadmore_holder;
     /**
      * 加载失败/加载结束(没有下一页数据)
      */

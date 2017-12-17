@@ -1,10 +1,9 @@
 package me.tatarka.bindingcollectionadapter.sample;
 
 import android.databinding.BaseObservable;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableList;
 
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
 
 /**
@@ -12,7 +11,7 @@ import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
  */
 public class ItemRecvViewModel extends BaseObservable implements LayoutManagers.FullSpan{
 
-   public ObservableList<ItemImgModel> items = new ObservableArrayList<ItemImgModel>();
+   public JObservableList<ItemImgModel> items = new JObservableList<ItemImgModel>();
 
     public ItemBinding recvListBinding = ItemBinding.of(BR.imgModel, R.layout.item_img_test);
 

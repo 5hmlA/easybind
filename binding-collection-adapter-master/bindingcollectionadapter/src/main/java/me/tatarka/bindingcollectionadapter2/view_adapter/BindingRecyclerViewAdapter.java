@@ -13,13 +13,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import me.tatarka.bindingcollectionadapter2.BindingCollectionAdapter;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.Utils;
-import me.tatarka.bindingcollectionadapter2.recv.AdapterReferenceCollector;
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
 
 /**
@@ -27,17 +26,17 @@ import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
  * If you give it an {@link ObservableList} it will also updated itself based on changes to that
  * list.
  */
-public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHolder> implements BindingCollectionAdapter<T> {
+public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHolder>
+        implements BindingCollectionAdapter<T>, JObservableList.JOnListChangedCallback<T> {
     private static final Object DATA_INVALIDATION = new Object();
     public static final String TAG = BindingRecyclerViewAdapter.class.getSimpleName();
-    private ItemBinding<T> itemBinding;
-    private WeakReferenceOnListChangedCallback<T> callback;
-    private List<T> items;
-    private LayoutInflater inflater;
-    private ItemIds<? super T> itemIds;
-    private ViewHolderFactory viewHolderFactory;
+    protected ItemBinding<T> itemBinding;
+    protected JObservableList<T> items;
+    protected LayoutInflater inflater;
+    protected ItemIds<? super T> itemIds;
+    protected ViewHolderFactory viewHolderFactory;
     // Currently attached recyclerview, we don't have to listen to notifications if null.
-    @Nullable private RecyclerView recyclerView;
+    @Nullable protected RecyclerView recyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
 
@@ -53,22 +52,15 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
 
     @Override
     public void setItems(@Nullable List<T> items){
-        if(this.items == items) {
+        if(this.items == items || !( items instanceof JObservableList )) {
             return;
         }
         // If a recyclerview is listening, set up listeners. Otherwise wait until one is attached.
         // No need to make a sound if nobody is listening right?
+        this.items = (JObservableList<T>)items;
         if(recyclerView != null) {
-            if(this.items instanceof ObservableList) {
-                ( (ObservableList<T>)this.items ).removeOnListChangedCallback(callback);
-                callback = null;
-            }
-            if(items instanceof ObservableList) {
-                callback = new WeakReferenceOnListChangedCallback<>(this, (ObservableList<T>)items);
-                ( (ObservableList<T>)items ).addOnListChangedCallback(callback);
-            }
+            this.items.addOnListChangedCallback2(this);
         }
-        this.items = items;
         notifyDataSetChanged();
     }
 
@@ -91,9 +83,8 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView){
-        if(this.recyclerView == null && items != null && items instanceof ObservableList) {
-            callback = new WeakReferenceOnListChangedCallback<>(this, (ObservableList<T>)items);
-            ( (ObservableList<T>)items ).addOnListChangedCallback(callback);
+        if(this.recyclerView == null && items != null) {
+            items.addOnListChangedCallback2(this);
         }
         this.recyclerView = recyclerView;
     }
@@ -121,9 +112,8 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView){
-        if(this.recyclerView != null && items != null && items instanceof ObservableList) {
-            ( (ObservableList<T>)items ).removeOnListChangedCallback(callback);
-            callback = null;
+        if(this.recyclerView != null && items != null) {
+            items.removeOnListChangedCallback2(this);
         }
         this.recyclerView = null;
     }
@@ -174,7 +164,8 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position){
-                    return items.get(position) instanceof LayoutManagers.FullSpan ? gridLayoutManager.getSpanCount() : 1;
+                    return items.get(
+                            position) instanceof LayoutManagers.FullSpan ? gridLayoutManager.getSpanCount() : 1;
                 }
             });
         }
@@ -242,6 +233,10 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
         viewHolderFactory = factory;
     }
 
+    /**
+     * 包括 底部的一个loading   总数+1
+     * @return
+     */
     @Override
     public int getItemCount(){
         return items == null ? 0 : items.size();
@@ -252,64 +247,49 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
         return itemIds == null ? position : itemIds.getItemId(position, items.get(position));
     }
 
-    private static class WeakReferenceOnListChangedCallback<T> extends ObservableList.OnListChangedCallback<ObservableList<T>> {
-        final WeakReference<BindingRecyclerViewAdapter<T>> adapterRef;
-
-        WeakReferenceOnListChangedCallback(BindingRecyclerViewAdapter<T> adapter, ObservableList<T> items){
-            this.adapterRef = AdapterReferenceCollector.createRef(adapter, items, this);
-        }
-
-        @Override
-        public void onChanged(ObservableList sender){
-            BindingRecyclerViewAdapter<T> adapter = adapterRef.get();
-            if(adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            adapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onItemRangeChanged(ObservableList sender, final int positionStart, final int itemCount){
-            BindingRecyclerViewAdapter<T> adapter = adapterRef.get();
-            if(adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            adapter.notifyItemRangeChanged(positionStart, itemCount);
-        }
-
-        @Override
-        public void onItemRangeInserted(ObservableList sender, final int positionStart, final int itemCount){
-            BindingRecyclerViewAdapter<T> adapter = adapterRef.get();
-            if(adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            adapter.notifyItemRangeInserted(positionStart, itemCount);
-        }
-
-        @Override
-        public void onItemRangeMoved(ObservableList sender, final int fromPosition, final int toPosition, final int itemCount){
-            BindingRecyclerViewAdapter<T> adapter = adapterRef.get();
-            if(adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            for(int i = 0; i<itemCount; i++) {
-                adapter.notifyItemMoved(fromPosition+i, toPosition+i);
+    @Override
+    public void onChanged(JObservableList ts, int position, int count, Object payload){
+        Utils.ensureChangeOnMainThread();
+        if(count == 1) {
+            notifyItemChanged(position, 0);
+        }else {
+            for(int i = 0; i<count; i++) {
+                notifyItemChanged(position+i, 0);
             }
         }
+    }
 
-        @Override
-        public void onItemRangeRemoved(ObservableList sender, final int positionStart, final int itemCount){
-            BindingRecyclerViewAdapter<T> adapter = adapterRef.get();
-            if(adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            adapter.notifyItemRangeRemoved(positionStart, itemCount);
+    @Override
+    public void onItemRangeInserted(JObservableList<T> ts, int positionStart, int itemCount){
+        Utils.ensureChangeOnMainThread();
+        if(itemCount == getItemCount()-1) {//减去 底部loading
+            //刷新全部 数据 不包括底部loading
+            notifyDataSetChanged();
+        }else {
+            notifyItemRangeInserted(positionStart, itemCount);
         }
+        // adapter.inserted -- oncreateholder--binderholder(数据来自item)
+    }
+
+    @Override
+    public void onItemRangeRemoved(JObservableList ts, int positionStart, int itemCount){
+        Utils.ensureChangeOnMainThread();
+        notifyItemRangeRemoved(positionStart, itemCount);
+    }
+
+    @Override
+    public void onMoved(JObservableList ts, int fromPosition, int toPosition){
+        Utils.ensureChangeOnMainThread();
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onClear(JObservableList ts, int itemCount){
+        //        this.recyclerView.scrollToPosition(0);
+        onItemRangeRemoved(ts, 0, itemCount);
+        //        if(getItemCount() == 1) {
+        //            LOG("清空数据了,只剩下 loading");
+        //        }
     }
 
     public interface ItemIds<T> {

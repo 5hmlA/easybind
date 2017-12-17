@@ -5,12 +5,14 @@ import android.util.SparseArray;
 
 import java.lang.ref.WeakReference;
 
+import me.tatarka.bindingcollectionadapter2.collections.IRecvDataDiff;
+
 /**
  * @another 江祖赟
  * @date 2017/12/15.
  * 为每个item绑定一些额外的监听事件
  */
-public abstract class ExtrasBindViewModel extends BaseObservable {
+public abstract  class ExtrasBindViewModel extends BaseObservable implements IRecvDataDiff {
     public SparseArray<WeakReference<Object>> extraBindings = new SparseArray<>();
 
     /**
@@ -34,5 +36,26 @@ public abstract class ExtrasBindViewModel extends BaseObservable {
         if (extraBindings != null) {
             extraBindings.remove(variableId);
         }
+    }
+
+    @Override
+    public int hashCode(){
+        return extraBindings != null ? extraBindings.hashCode() : 0;
+    }
+
+    @Override
+    public boolean areItemsTheSame(IRecvDataDiff oldData, IRecvDataDiff newData){
+        return oldData  == newData;
+//        return oldData.getClass() == newData.getClass();
+    }
+
+    @Override
+    public boolean areContentsTheSame(IRecvDataDiff oldData, IRecvDataDiff newData){
+        return true;
+    }
+
+    @Override
+    public Object getChangePayload(IRecvDataDiff oldData, IRecvDataDiff newData){
+        return null;
     }
 }

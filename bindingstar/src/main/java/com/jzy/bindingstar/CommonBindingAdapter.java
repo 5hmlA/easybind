@@ -2,10 +2,12 @@ package com.jzy.bindingstar;
 
 import android.databinding.BindingAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
+import com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout;
 import com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel;
 
 import java.util.concurrent.TimeUnit;
@@ -42,5 +44,11 @@ public class CommonBindingAdapter {
                 viewModel.search(editText,textViewAfterTextChangeEvent.toString());
             }
         });
+    }
+
+    @BindingAdapter("swipeRefreshLayout")
+    public static void attachToSwipeRefreshLayout(final RecyclerView view,
+                                                              final ScrollChildSwipeRefreshLayout swipeRefreshLayout) {
+        swipeRefreshLayout.setScrollUpChild(view);
     }
 }

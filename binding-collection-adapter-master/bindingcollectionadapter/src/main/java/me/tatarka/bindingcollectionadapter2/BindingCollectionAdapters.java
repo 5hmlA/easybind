@@ -28,8 +28,10 @@ public class BindingCollectionAdapters {
     // AdapterView
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = {"itemBinding", "itemTypeCount", "dataList", "adapter", "itemDropDownLayout", "itemIds", "itemIsEnabled"}, requireAll = false)
-    public static <T> void setAdapter(AdapterView adapterView, ItemBinding<T> itemBinding, Integer itemTypeCount, List items, BindingListViewAdapter<T> adapter, @LayoutRes
-            int itemDropDownLayout, BindingListViewAdapter.ItemIds<? super T> itemIds, BindingListViewAdapter.ItemIsEnabled<? super T> itemIsEnabled){
+    public static <T> void setAdapter(AdapterView adapterView, ItemBinding<T> itemBinding, Integer itemTypeCount,
+                                      List items, BindingListViewAdapter<T> adapter, @LayoutRes int itemDropDownLayout,
+                                      BindingListViewAdapter.ItemIds<? super T> itemIds,
+                                      BindingListViewAdapter.ItemIsEnabled<? super T> itemIsEnabled){
         if(itemBinding == null) {
             throw new IllegalArgumentException("updateItemLayoutRes must not be null");
         }
@@ -59,14 +61,17 @@ public class BindingCollectionAdapters {
      * android.widget.HeaderViewListAdapter}.
      */
     private static Adapter unwrapAdapter(Adapter adapter){
-        return adapter instanceof WrapperListAdapter ? unwrapAdapter(( (WrapperListAdapter)adapter ).getWrappedAdapter()) : adapter;
+        return adapter instanceof WrapperListAdapter ? unwrapAdapter(
+                ( (WrapperListAdapter)adapter ).getWrappedAdapter()) : adapter;
     }
 
 
     // ViewPager
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = {"itemBinding", "dataList", "adapter", "pageTitles"}, requireAll = false)
-    public static <T> void setAdapter(ViewPager viewPager, ItemBinding<T> itemBinding, List items, BindingViewPagerAdapter<T> adapter, BindingViewPagerAdapter.PageTitles<T> pageTitles){
+    public static <T> void setAdapter(ViewPager viewPager, ItemBinding<T> itemBinding, List items,
+                                      BindingViewPagerAdapter<T> adapter,
+                                      BindingViewPagerAdapter.PageTitles<T> pageTitles){
         if(itemBinding == null) {
             throw new IllegalArgumentException("updateItemLayoutRes must not be null");
         }
@@ -104,7 +109,12 @@ public class BindingCollectionAdapters {
     // RecyclerView
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = {"layoutManager", "itemBinding", "dataList", "adapter", "itemIds", "viewHolder", "loadmoreControl"}, requireAll = false)
-    public static <T> void setAdapter(RecyclerView recyclerView, LayoutManagers.LayoutManagerFactory layoutManagerFactory, ItemBinding<T> itemBinding, List<T> items, BindingRecyclerViewAdapter<T> adapter, BindingRecyclerViewAdapter.ItemIds<? super T> itemIds, BindingRecyclerViewAdapter.ViewHolderFactory viewHolderFactory, LoadMoreWrapperAdapter.OnLoadmoreControl loadmoreControl){
+    public static <T> void setAdapter(RecyclerView recyclerView,
+                                      LayoutManagers.LayoutManagerFactory layoutManagerFactory,
+                                      ItemBinding<T> itemBinding, List<T> items, BindingRecyclerViewAdapter<T> adapter,
+                                      BindingRecyclerViewAdapter.ItemIds<? super T> itemIds,
+                                      BindingRecyclerViewAdapter.ViewHolderFactory viewHolderFactory,
+                                      LoadMoreWrapperAdapter.OnLoadmoreControl loadmoreControl){
         if(itemBinding == null) {
             throw new IllegalArgumentException("itemBinding must not be null");
         }
@@ -143,6 +153,6 @@ public class BindingCollectionAdapters {
 
     @BindingAdapter("paddingLR")
     public static void setPaddingLeft(View view, float padding){
-        view.setPadding(( (int)padding ), view.getPaddingTop(), ( (int)padding ), view.getPaddingBottom());
+        view.setPadding(Math.round(padding), view.getPaddingTop(), Math.round(padding), view.getPaddingBottom());
     }
 }

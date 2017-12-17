@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout"/>
+
+        <variable
+            name="pageViewModel"
+            type="com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel"/>
+        <!--如果数据是泛型 需要指定数据类型-->
+        <!--type="com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel&lt;Object&gt;"/>-->
+    </data>
+
+    <com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:onRefresh="@{pageViewModel}">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            bind:dataList="@{pageViewModel.godLists}"
+            bind:itemBinding="@{pageViewModel.multipleItems}"
+            bind:layoutManager="@{pageViewModel.layoutManager}"
+            bind:loadmoreControl="@{pageViewModel.mLoadmoreControl}"/>
+    </com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout>
+</layout>

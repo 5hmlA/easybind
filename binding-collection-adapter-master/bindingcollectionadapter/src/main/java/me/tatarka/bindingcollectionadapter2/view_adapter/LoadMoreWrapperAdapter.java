@@ -9,6 +9,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 
 import me.tatarka.bindingcollectionadapter2.BR;
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 
 import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
@@ -105,7 +106,7 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
             mLoadFinishTips = finishTips;
         }
 
-        public void setLoadmoreFinished(boolean finished,String finishTips){
+        public void setLoadmoreFinished(boolean finished, String finishTips){
             mLoadFinishTips = finishTips;
             if(loadmoreFinished != finished) {
                 mLoadFinishTips = null;
@@ -140,7 +141,6 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
         }
     }
 
-    public RecyclerView mRecyclerView;
     public int mLastCheckDataSize;
 
 
@@ -151,56 +151,7 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView){
-        mRecyclerView = recyclerView;
         super.onAttachedToRecyclerView(recyclerView);
-        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount){
-                mInLoadingState = false;
-                super.onItemRangeChanged(positionStart, itemCount);
-            }
-
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount, Object payload){
-                mInLoadingState = false;
-                super.onItemRangeChanged(positionStart, itemCount, payload);
-            }
-
-
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount){
-                mInLoadingState = false;
-                mLoadmoreControl.loadmoreSucceed();//上拉加载成功
-                LOG(TAG,"数据变化 观察者  onItemRangeInserted --> finished?",mLoadmoreControl.loadmoreFinished);
-                super.onItemRangeInserted(positionStart, itemCount);
-            }
-
-
-            @Override
-            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount){
-                super.onItemRangeMoved(fromPosition, toPosition, itemCount);
-            }
-
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount){
-                mInLoadingState = false;
-                checkUp2loadMore(RecyclerView.SCROLL_STATE_IDLE);
-            }
-
-
-            @Override
-            public void onChanged(){
-                mInLoadingState = false;
-                //数据数量 变化了才需要判断  mLastCheckDataSize > 0不是第一次change
-                if(!mLoadmoreControl.loadmoreFinished && mLastCheckDataSize>0 && getItemCount() != mLastCheckDataSize) {
-                    LOG("load_more 数据发生变化同时数据数量发生变化 检测是否需要触发上拉加载", mLastCheckDataSize = getItemCount());
-                    checkUp2loadMore(RecyclerView.SCROLL_STATE_IDLE);
-                }
-            }
-        });
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -235,9 +186,10 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
             //清空到 只剩下一个loading item则重启 上拉加载
             mLoadmoreControl.forceDown2Refresh();
             //当前状态为停止滑动状态SCROLL_STATE_IDLE时   getItemCount()-1去掉底部 loading
-        }else if(!mLoadmoreControl.loadmoreFinished && getItemCount()-1>0 && newState == RecyclerView.SCROLL_STATE_IDLE) {
+        }else if(!mLoadmoreControl.loadmoreFinished && getItemCount()-1>0 &&
+                newState == RecyclerView.SCROLL_STATE_IDLE) {
             int lastPosition = 0;
-            RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+            RecyclerView.LayoutManager layoutManager = this.recyclerView.getLayoutManager();
             if(layoutManager instanceof GridLayoutManager) {
                 //通过LayoutManager找到当前显示的最后的item的position
                 lastPosition = ( (GridLayoutManager)layoutManager ).findLastVisibleItemPosition();
@@ -256,7 +208,7 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
                 Log.d(TAG, "loading 上拉提示 item 可见");
                 if(mLoadmoreControl != null && !mInLoadingState) {
                     mInLoadingState = true;
-                    mLoadmoreControl.onUp2Loadmore(mRecyclerView);
+                    mLoadmoreControl.onUp2Loadmore(this.recyclerView);
                 }
             }
 
@@ -291,4 +243,30 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
         return this;
     }
 
+    @Override
+    public void onChanged(JObservableList ts, int position, int count, Object payload){
+        super.onChanged(ts, position, count, payload);
+        mInLoadingState = false;
+        //数据数量 变化了才需要判断  mLastCheckDataSize > 0不是第一次change
+        if(!mLoadmoreControl.loadmoreFinished && mLastCheckDataSize>0 && getItemCount() != mLastCheckDataSize) {
+            LOG("load_more 数据发生变化同时数据数量发生变化 检测是否需要触发上拉加载", mLastCheckDataSize = getItemCount());
+            checkUp2loadMore(RecyclerView.SCROLL_STATE_IDLE);
+        }
+    }
+
+    @Override
+    public void onItemRangeInserted(JObservableList<T> ts, int positionStart, int itemCount){
+        super.onItemRangeInserted(ts, positionStart, itemCount);
+        mInLoadingState = false;
+        mLoadmoreControl.loadmoreSucceed();//上拉加载成功//下拉刷新成功
+        LOG(TAG, itemCount, " 条数据变化 (观察者) onItemRangeInserted --> finished?", mLoadmoreControl.loadmoreFinished);
+    }
+
+    @Override
+    public void onItemRangeRemoved(JObservableList ts, int positionStart, int itemCount){
+        super.onItemRangeRemoved(ts, positionStart, itemCount);
+        LOG(TAG, items.size(), " 清除数据 onItemRangeMoved ", itemCount);
+        mInLoadingState = false;
+        checkUp2loadMore(RecyclerView.SCROLL_STATE_IDLE);//删除数据后检查 是否要自动拉取数据
+    }
 }

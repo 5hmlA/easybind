@@ -27,6 +27,6 @@ dependencies {
     implementation deps.support.v4
     implementation deps.constraint_layout
 //    implementation deps.rxbinding
-    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    implementation project(':bindingcollectionadapter')
+    api 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    api project(':bindingcollectionadapter')
 }

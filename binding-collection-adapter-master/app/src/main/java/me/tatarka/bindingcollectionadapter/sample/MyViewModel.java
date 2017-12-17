@@ -1,8 +1,6 @@
 package me.tatarka.bindingcollectionadapter.sample;
 
 import android.arch.lifecycle.ViewModel;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableList;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,6 +8,7 @@ import android.view.View;
 import com.jzy.bindingstar.pagingviewmodel.loadmorehelper.LoadmoreFootViewModel;
 
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 import me.tatarka.bindingcollectionadapter2.view_adapter.BindingListViewAdapter;
@@ -47,7 +46,7 @@ public class MyViewModel extends ViewModel {
         }
     };
 
-    public final ObservableList<Object> items = new ObservableArrayList<Object>(){
+    public final JObservableList<Object> items = new JObservableList<Object>(){
         {
                         add("Header");
                         add(new ItemRecvViewModel());

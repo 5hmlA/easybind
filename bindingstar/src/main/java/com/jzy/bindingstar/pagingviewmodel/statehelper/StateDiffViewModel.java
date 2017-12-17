@@ -5,9 +5,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 
 import me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel;
 
+import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
+
 /**
  * @another 江祖赟
  * @date 2017/12/16.
+ * 带有 泛型 不能在 databinding里面 作为变量 引用
  */
 public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel {
 
@@ -23,7 +26,8 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel {
 
     public abstract void subscribeData(Object orignParam);
 
-    public void onRefresh(SwipeRefreshLayout swipeRefreshLayout){ /* compiled code */
+    public void onRefresh(SwipeRefreshLayout swipeRefreshLayout){
+        LOG("=========== onRefresh ===========");
         mSwipeRefreshLayout = swipeRefreshLayout;
     }
 
@@ -50,11 +54,13 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel {
 
     public void showPageStateError(@PageDiffState int pageDiffState){
         if(pageDiffState == PageDiffState.PAGE_STATE_EMPTY) {
+            LOG("=========== showPageStateError ===========","数据为空");
             //允许下拉刷新
             switchSwipeRefresh(true);
             //显示 空数据状态
 
         }else {
+            LOG("=========== showPageStateError ===========","数据异常/网络错误");
             //网络错误数据错误 关闭下拉刷新 因为网络错误有按钮可刷新
             switchSwipeRefresh(false);
             //显示错误界面
