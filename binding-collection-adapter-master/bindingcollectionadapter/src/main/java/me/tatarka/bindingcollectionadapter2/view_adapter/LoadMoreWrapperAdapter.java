@@ -10,12 +10,17 @@ import android.util.Log;
 
 import me.tatarka.bindingcollectionadapter2.BR;
 import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
+import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
 
 import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
 /**
  * 分页列表 涉及到改变数据的比如回复删除 获取分页数据最好用索引 从哪个索引开始取多少条数据
  * 关于回复评论/回复回复，需要自己伪造新增的回复数据添加的被回复的评论中去 （涉及到分页不能重新刷洗数据）
+ * <br></>
+ * <li> 在 {@link LoadMoreWrapperAdapter} 中 {@link MergeObservableList} 主要监听 {@link JObservableList}的变化(列表展示的数据的增删改),同时将
+ * 变化 依赖自己的监听器转发给 {@link LoadMoreWrapperAdapter} 使 adapter 在变化中 处理对应的增删改
+ * </b></li>
  */
 public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
 

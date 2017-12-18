@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import java.lang.ref.WeakReference;
 
 import me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel;
+import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 
 /**
  * Provides the necessary information to bind an item in a collection to a view. This includes the
@@ -34,6 +35,11 @@ public final class ItemBinding<T> {
 
     /**
      * Constructs an instance with the given variable id and layout.
+     *
+     * @param variableId  布局中接受数据变量的ID(BR)
+     * @param layoutRes  item 对应的布局ID(res)
+     * @param <T>
+     * @return
      */
     public static <T> ItemBinding<T> of(int variableId, @LayoutRes int layoutRes){
         return new ItemBinding<T>(null).set(variableId, layoutRes);
@@ -43,6 +49,7 @@ public final class ItemBinding<T> {
      * Constructs an instance with the given callback. It will be called for each item in the
      * collection to set the binding info.
      * 多类型 布局 OnItemBindClass {#BindingCollectionAdapters.toItemBinding()}
+     * 主要作用是 将 {@link OnItemBindClass} 转化为 {@link ItemBinding}
      *
      * @see OnItemBind
      */

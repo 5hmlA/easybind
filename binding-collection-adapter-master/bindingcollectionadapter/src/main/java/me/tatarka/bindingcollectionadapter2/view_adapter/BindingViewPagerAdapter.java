@@ -11,69 +11,59 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedList;
-import java.util.List;
 
 import me.tatarka.bindingcollectionadapter2.BindingCollectionAdapter;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.OnItemBind;
 import me.tatarka.bindingcollectionadapter2.Utils;
-import me.tatarka.bindingcollectionadapter2.recv.AdapterReferenceCollector;
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 
 /**
  * A {@link PagerAdapter} that binds mDataLists to layouts using the given {@link ItemBinding} or {@link
  * OnItemBind}. If you give it an {@link ObservableList} it will also updated itself based on
  * changes to that list.
  */
-public class BindingViewPagerAdapter<T> extends PagerAdapter implements BindingCollectionAdapter<T> {
+public class BindingViewPagerAdapter<T> extends PagerAdapter
+        implements BindingCollectionAdapter<T>, JObservableList.JOnListChangedCallback {
     private ItemBinding<T> itemBinding;
-    private WeakReferenceOnListChangedCallback<T> callback;
-    private List<T> items;
-    private LayoutInflater inflater;
+    private JObservableList<T> items;
     private PageTitles<T> pageTitles;
     private SparseArray<LinkedList<ViewDataBinding>> mViewDataBinds = new SparseArray<>(1);
 
     @Override
-    public void setItemBinding(ItemBinding<T> itemBinding) {
+    public void setItemBinding(ItemBinding<T> itemBinding){
         this.itemBinding = itemBinding;
     }
 
     @Override
-    public ItemBinding<T> getItemBinding() {
+    public ItemBinding<T> getItemBinding(){
         return itemBinding;
     }
 
     @Override
-    public void setItems(@Nullable List<T> items) {
-        if (this.items == items) {
+    public void setItems(@Nullable JObservableList<T> items){
+        if(this.items == items) {
             return;
         }
-        if (this.items instanceof ObservableList) {
-            ((ObservableList<T>) this.items).removeOnListChangedCallback(callback);
-            callback = null;
-        }
-        if (items instanceof ObservableList) {
-            callback = new WeakReferenceOnListChangedCallback<T>(this, (ObservableList<T>) items);
-            ((ObservableList<T>) items).addOnListChangedCallback(callback);
-        }
         this.items = items;
+        this.items.addOnListChangedCallback2(this);
         notifyDataSetChanged();
     }
 
     @Override
-    public T getAdapterItem(int position) {
+    public T getAdapterItem(int position){
         return items.get(position);
     }
 
     @Override
-    public ViewDataBinding onCreateBinding(LayoutInflater inflater, @LayoutRes int layoutRes, ViewGroup viewGroup) {
+    public ViewDataBinding onCreateBinding(LayoutInflater inflater, @LayoutRes int layoutRes, ViewGroup viewGroup){
         return DataBindingUtil.inflate(inflater, layoutRes, viewGroup, false);
     }
 
     @Override
-    public void onBindBinding(ViewDataBinding binding, int variableId, @LayoutRes int layoutRes, int position, T item) {
-        if (itemBinding.bind(binding, item)) {
+    public void onBindBinding(ViewDataBinding binding, int variableId, @LayoutRes int layoutRes, int position, T item){
+        if(itemBinding.bind(binding, item)) {
             binding.executePendingBindings();
         }
     }
@@ -81,26 +71,27 @@ public class BindingViewPagerAdapter<T> extends PagerAdapter implements BindingC
     /**
      * Sets the page titles for the adapter.
      */
-    public void setPageTitles(@Nullable PageTitles<T> pageTitles) {
+    public void setPageTitles(@Nullable PageTitles<T> pageTitles){
         this.pageTitles = pageTitles;
     }
 
     @Override
-    public int getCount() {
+    public int getCount(){
         return items == null ? 0 : items.size();
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
+    public CharSequence getPageTitle(int position){
         return pageTitles == null ? null : pageTitles.getPageTitle(position, items.get(position));
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, int position){
 
         T item = items.get(position);
         itemBinding.updateItemLayoutRes(position, item);
-        ViewDataBinding binding = onCreateBinding(inflater, itemBinding.layoutRes(), container);
+        ViewDataBinding binding = onCreateBinding(LayoutInflater.from(container.getContext()), itemBinding.layoutRes(),
+                                                  container);
         onBindBinding(binding, itemBinding.variableId(), itemBinding.layoutRes(), position, item);
         container.addView(binding.getRoot());
         binding.getRoot().setTag(item);
@@ -108,22 +99,22 @@ public class BindingViewPagerAdapter<T> extends PagerAdapter implements BindingC
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView((View) object);
+    public void destroyItem(ViewGroup container, int position, Object object){
+        container.removeView((View)object);
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(View view, Object object){
         return view == object;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public int getItemPosition(Object object) {
-        T item = (T) ((View) object).getTag();
-        if (items != null) {
-            for (int i = 0; i < items.size(); i++) {
-                if (item == items.get(i)) {
+    public int getItemPosition(Object object){
+        T item = (T)( (View)object ).getTag();
+        if(items != null) {
+            for(int i = 0; i<items.size(); i++) {
+                if(item == items.get(i)) {
                     return i;
                 }
             }
@@ -131,42 +122,34 @@ public class BindingViewPagerAdapter<T> extends PagerAdapter implements BindingC
         return POSITION_NONE;
     }
 
-    private static class WeakReferenceOnListChangedCallback<T> extends ObservableList.OnListChangedCallback<ObservableList<T>> {
-        final WeakReference<BindingViewPagerAdapter<T>> adapterRef;
+    @Override
+    public void onChanged(JObservableList jObservableList, int fromPosition, int count, Object payload){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        WeakReferenceOnListChangedCallback(BindingViewPagerAdapter<T> adapter, ObservableList<T> items) {
-            this.adapterRef = AdapterReferenceCollector.createRef(adapter, items, this);
-        }
+    @Override
+    public void onItemRangeInserted(JObservableList jObservableList, int fromPosition, int count){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public void onChanged(ObservableList sender) {
-            BindingViewPagerAdapter<T> adapter = adapterRef.get();
-            if (adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            adapter.notifyDataSetChanged();
-        }
+    @Override
+    public void onItemRangeRemoved(JObservableList jObservableList, int fromPosition, int count){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public void onItemRangeChanged(ObservableList sender, int positionStart, int itemCount) {
-            onChanged(sender);
-        }
+    @Override
+    public void onMoved(JObservableList jObservableList, int fromPosition, int toPosition){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public void onItemRangeInserted(ObservableList sender, int positionStart, int itemCount) {
-            onChanged(sender);
-        }
-
-        @Override
-        public void onItemRangeMoved(ObservableList sender, int fromPosition, int toPosition, int itemCount) {
-            onChanged(sender);
-        }
-
-        @Override
-        public void onItemRangeRemoved(ObservableList sender, int positionStart, int itemCount) {
-            onChanged(sender);
-        }
+    @Override
+    public void onClear(JObservableList jObservableList, int oldSize){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
     }
 
     public interface PageTitles<T> {

@@ -11,8 +11,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.WrapperListAdapter;
 
-import java.util.List;
-
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
 import me.tatarka.bindingcollectionadapter2.view_adapter.BindingListViewAdapter;
 import me.tatarka.bindingcollectionadapter2.view_adapter.BindingRecyclerViewAdapter;
@@ -29,7 +28,7 @@ public class BindingCollectionAdapters {
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = {"itemBinding", "itemTypeCount", "dataList", "adapter", "itemDropDownLayout", "itemIds", "itemIsEnabled"}, requireAll = false)
     public static <T> void setAdapter(AdapterView adapterView, ItemBinding<T> itemBinding, Integer itemTypeCount,
-                                      List items, BindingListViewAdapter<T> adapter, @LayoutRes int itemDropDownLayout,
+                                      JObservableList items, BindingListViewAdapter<T> adapter, @LayoutRes int itemDropDownLayout,
                                       BindingListViewAdapter.ItemIds<? super T> itemIds,
                                       BindingListViewAdapter.ItemIsEnabled<? super T> itemIsEnabled){
         if(itemBinding == null) {
@@ -69,7 +68,7 @@ public class BindingCollectionAdapters {
     // ViewPager
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = {"itemBinding", "dataList", "adapter", "pageTitles"}, requireAll = false)
-    public static <T> void setAdapter(ViewPager viewPager, ItemBinding<T> itemBinding, List items,
+    public static <T> void setAdapter(ViewPager viewPager, ItemBinding<T> itemBinding, JObservableList items,
                                       BindingViewPagerAdapter<T> adapter,
                                       BindingViewPagerAdapter.PageTitles<T> pageTitles){
         if(itemBinding == null) {
@@ -111,7 +110,7 @@ public class BindingCollectionAdapters {
     @BindingAdapter(value = {"layoutManager", "itemBinding", "dataList", "adapter", "itemIds", "viewHolder", "loadmoreControl"}, requireAll = false)
     public static <T> void setAdapter(RecyclerView recyclerView,
                                       LayoutManagers.LayoutManagerFactory layoutManagerFactory,
-                                      ItemBinding<T> itemBinding, List<T> items, BindingRecyclerViewAdapter<T> adapter,
+                                      ItemBinding<T> itemBinding, JObservableList<T> items, BindingRecyclerViewAdapter<T> adapter,
                                       BindingRecyclerViewAdapter.ItemIds<? super T> itemIds,
                                       BindingRecyclerViewAdapter.ViewHolderFactory viewHolderFactory,
                                       LoadMoreWrapperAdapter.OnLoadmoreControl loadmoreControl){

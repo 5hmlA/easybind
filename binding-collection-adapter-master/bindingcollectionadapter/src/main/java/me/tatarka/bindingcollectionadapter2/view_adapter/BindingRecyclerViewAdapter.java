@@ -19,12 +19,30 @@ import me.tatarka.bindingcollectionadapter2.BindingCollectionAdapter;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.Utils;
 import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
+import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
+import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
 
 /**
  * A {@link RecyclerView.Adapter} that binds mDataLists to layouts using the given {@link ItemBinding}.
  * If you give it an {@link ObservableList} it will also updated itself based on changes to that
- * list.
+ * list.<br>
+ * <li> LoadMoreWrapperAdapter的数据类型和布局ID的对应关系 由 {@link OnItemBindClass} (注册多种类型数据/布局) , {@link ItemBinding}
+ * 提供单一类型数据/数据</li>
+ * <li>在 {@link OnItemBindClass} 和 {@link ItemBinding} 注册数据/布局 (列表由item构成,每个item都对应一个ViewModel和dataBinding 都需要自己的布局,和数据)
+ * <ol>{@link ItemBinding} 由于是注册单类型数据 只需要提供 两个参数 of(int variableId (item)布局中的变量ID, @LayoutRes int layoutRes (item)
+ * 布局ID) {@link ItemBinding#of(int, int)}
+ * </ol>
+ * <ol>{@link OnItemBindClass} 用于注册多类型数据 regist(itemClass 数据类型,variableId 布局中的变量ID, layoutRes 布局ID)
+ * {@link OnItemBindClass#regist(Class, int, int)}</ol>
+ * <ol>adapter 是如何 根据类型找布局的 ? 主要在 {@link BindingRecyclerViewAdapter#getItemViewType(int)} 中调用了
+ * {@link ItemBinding#updateItemLayoutRes(int, Object)} 方法 找到position对应的layoutRes</ol>
+ * </li>
+ * <li> adapter的数据 由 {@link MergeObservableList} (提供(底部loading,各种有效数据)) , {@link JObservableList} 提供单一类型数据/数据</li>
+ * <li> {@link JObservableList} 是  {@link MergeObservableList} 的父类 <b> MergeObservableList主要作用是转发数据变化的情况 </b></li>
+ * <li> {@link JObservableList} 是  {@link BindingRecyclerViewAdapter} 实际使用的列表数据,adapter中通过注册 {@link JObservableList}
+ * 的变化监听 在监听器中处理对应的 增删改 操作,所以,只要 {@link JObservableList} 变化了 adapter 自然就会被notify刷新了
+ * </li>
  */
 public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHolder>
         implements BindingCollectionAdapter<T>, JObservableList.JOnListChangedCallback<T> {
@@ -51,16 +69,17 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
     }
 
     @Override
-    public void setItems(@Nullable List<T> items){
-        if(this.items == items || !( items instanceof JObservableList )) {
+    public void setItems(@Nullable JObservableList<T> items){
+        if(this.items == items ) {
             return;
         }
         // If a recyclerview is listening, set up listeners. Otherwise wait until one is attached.
         // No need to make a sound if nobody is listening right?
-        this.items = (JObservableList<T>)items;
-        if(recyclerView != null) {
-            this.items.addOnListChangedCallback2(this);
-        }
+        this.items = items;
+//        if(recyclerView != null) {
+//            this.items.addOnListChangedCallback2(this);
+//        }
+        this.items.addOnListChangedCallback2(this);
         notifyDataSetChanged();
     }
 
@@ -235,6 +254,7 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<ViewHold
 
     /**
      * 包括 底部的一个loading   总数+1
+     *
      * @return
      */
     @Override

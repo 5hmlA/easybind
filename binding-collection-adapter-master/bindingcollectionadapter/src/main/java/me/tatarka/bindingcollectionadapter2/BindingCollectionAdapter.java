@@ -7,8 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.util.List;
-
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.view_adapter.BindingListViewAdapter;
 import me.tatarka.bindingcollectionadapter2.view_adapter.BindingViewPagerAdapter;
 
@@ -39,7 +38,7 @@ public interface BindingCollectionAdapter<T> {
      * an {@code ObservableList}, you <em>must</em> call {@code notifyDataSetChanged()} or one of
      * the related methods.
      */
-    void setItems(@Nullable List<T> items);
+    void setItems(@Nullable JObservableList<T> items);
 
     /**
      * Returns the item in the adapter given position. This is useful for accessing items in the

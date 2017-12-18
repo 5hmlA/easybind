@@ -25,7 +25,7 @@ import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
 /**
  * 为啥 不用泛型 因为 布局里面必须要指定泛型类型 鉴于要接受不同布局 也就时任意数据对象
- * 所以 就固定 为object类型
+ * 所以 就固定 为object类型<br>
  */
 public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Object>> {
 
@@ -54,9 +54,13 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
     public JObservableList mDataLists = new JObservableList<>();
 
     /**
-     * 列表数据{@link #mDataLists} 包括 底部的 loading
+     * 列表数据{@link #godLists} 在处理上拉加载的ViewModel 中 主要包括两部分:1, 界面的多种类数据. 2, 底部的 上拉加载提示loading
+     * <li><b>{@link #mDataLists} 用来收集存储 展示的所有有效数据(不同类型布局)</b></li>
+     * <li><b>{@link #mLoadmoreFootViewModel} 就是底部的上拉加载提示 提示的各种状态(loading,error,finish)主要由
+     * {@link LoadMoreWrapperAdapter.OnLoadmoreControl}控制,该控制器主要控制上拉加载的状态</b></li>
      */
-    public final MergeObservableList<Object> godLists = new MergeObservableList<>().insertList(mDataLists).insertItem(mLoadmoreFootViewModel);
+    public final MergeObservableList<Object> godLists = new MergeObservableList<>().insertList(mDataLists).insertItem(
+            mLoadmoreFootViewModel);
 
     /**
      * 注册 不同类型布局 和 对应的class数据类型
@@ -86,8 +90,13 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
         registItemTypes(multipleItems);
     }
 
+    /**
+     * @param v
+     *         主要用来 获取布局中的控件对象
+     */
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom){
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight,
+                               int oldBottom){
         if(v instanceof RecyclerView) {
             mRecyclerView = (RecyclerView)v;
             if(mSwipeRefreshLayout != null) {
@@ -146,12 +155,15 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
     }
 
     protected void retryUp2LoadMoreData(RecyclerView recyclerView){
-        LOG("=========== retryUp2LoadMoreData ===========");
-        if(TextUtils.isEmpty(CURRENT_SEARCH_KEY)) {
-            //关键字为空 非搜索
-            subscribeData(mOrignParam);
-        }else {
-            toSearchFromService(CURRENT_SEARCH_KEY);
+        LOG("=========== retryUp2LoadMoreData ===========", mCurrentPage);
+        if(mCurrentPage>FIRST_PAGE) {
+            //上拉加载 失败 重试 一定不是在第一页的时候
+            if(TextUtils.isEmpty(CURRENT_SEARCH_KEY)) {
+                //关键字为空 非搜索
+                subscribeData(mOrignParam);
+            }else {
+                toSearchFromService(CURRENT_SEARCH_KEY);
+            }
         }
     }
 

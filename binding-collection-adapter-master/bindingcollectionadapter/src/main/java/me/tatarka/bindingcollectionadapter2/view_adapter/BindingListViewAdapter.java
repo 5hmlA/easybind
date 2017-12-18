@@ -11,25 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-
 import me.tatarka.bindingcollectionadapter2.BindingCollectionAdapter;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.Utils;
-import me.tatarka.bindingcollectionadapter2.recv.AdapterReferenceCollector;
+import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 
 /**
  * A {@link BaseAdapter} that binds mDataLists to layouts using the given {@link ItemBinding} If you give
  * it an {@link ObservableList} it will also updated itself based on changes to that list.
  */
-public class BindingListViewAdapter<T> extends BaseAdapter implements BindingCollectionAdapter<T> {
+public class BindingListViewAdapter<T> extends BaseAdapter implements BindingCollectionAdapter<T>,JObservableList.JOnListChangedCallback {
     private final int itemTypeCount;
     private ItemBinding<T> itemBinding;
     @LayoutRes
     private int dropDownItemLayout;
-    private WeakReferenceOnListChangedCallback<T> callback;
-    private List<T> items;
+    private JObservableList<T> items;
     private int[] layouts;
     private LayoutInflater inflater;
     private ItemIds<? super T> itemIds;
@@ -61,19 +57,14 @@ public class BindingListViewAdapter<T> extends BaseAdapter implements BindingCol
     }
 
     @Override
-    public void setItems(@Nullable List<T> items) {
-        if (this.items == items) {
+    public void setItems(@Nullable JObservableList<T> items) {
+        if(this.items == items ) {
             return;
         }
-        if (this.items instanceof ObservableList) {
-            ((ObservableList<T>) this.items).removeOnListChangedCallback(callback);
-            callback = null;
-        }
-        if (items instanceof ObservableList) {
-            callback = new WeakReferenceOnListChangedCallback<>(this, (ObservableList<T>) items);
-            ((ObservableList<T>) items).addOnListChangedCallback(callback);
-        }
+        // If a recyclerview is listening, set up listeners. Otherwise wait until one is attached.
+        // No need to make a sound if nobody is listening right?
         this.items = items;
+        this.items.addOnListChangedCallback2(this);
         notifyDataSetChanged();
     }
 
@@ -212,42 +203,34 @@ public class BindingListViewAdapter<T> extends BaseAdapter implements BindingCol
         return count;
     }
 
-    private static class WeakReferenceOnListChangedCallback<T> extends ObservableList.OnListChangedCallback<ObservableList<T>> {
-        final WeakReference<BindingListViewAdapter<T>> adapterRef;
+    @Override
+    public void onChanged(JObservableList jObservableList, int fromPosition, int count, Object payload){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        WeakReferenceOnListChangedCallback(BindingListViewAdapter<T> adapter, ObservableList<T> items) {
-            this.adapterRef = AdapterReferenceCollector.createRef(adapter, items, this);
-        }
+    @Override
+    public void onItemRangeInserted(JObservableList jObservableList, int fromPosition, int count){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public void onChanged(ObservableList sender) {
-            BindingListViewAdapter<T> adapter = adapterRef.get();
-            if (adapter == null) {
-                return;
-            }
-            Utils.ensureChangeOnMainThread();
-            adapter.notifyDataSetChanged();
-        }
+    @Override
+    public void onItemRangeRemoved(JObservableList jObservableList, int fromPosition, int count){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public void onItemRangeChanged(ObservableList sender, int positionStart, int itemCount) {
-            onChanged(sender);
-        }
+    @Override
+    public void onMoved(JObservableList jObservableList, int fromPosition, int toPosition){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public void onItemRangeInserted(ObservableList sender, int positionStart, int itemCount) {
-            onChanged(sender);
-        }
-
-        @Override
-        public void onItemRangeMoved(ObservableList sender, int fromPosition, int toPosition, int itemCount) {
-            onChanged(sender);
-        }
-
-        @Override
-        public void onItemRangeRemoved(ObservableList sender, int positionStart, int itemCount) {
-            onChanged(sender);
-        }
+    @Override
+    public void onClear(JObservableList jObservableList, int oldSize){
+        Utils.ensureChangeOnMainThread();
+        notifyDataSetChanged();
     }
 
     public interface ItemIds<T> {

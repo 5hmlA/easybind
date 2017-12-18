@@ -38,17 +38,17 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment;
                 switch (menuItem.getItemId()) {
                     case R.id.action_listview:
-//                        fragment = new FragmentListView();
-//                        break;
+                        fragment = new FragmentListView();
+                        break;
                     case R.id.action_recyclerview:
                         fragment = new FragmentRecyclerView();
                         break;
-//                    case R.id.action_viewpager:
-//                        fragment = new FragmentViewPagerView();
-//                        break;
-//                    case R.id.action_spinner:
-//                        fragment = new FragmentSpinnerView();
-//                        break;
+                    case R.id.action_viewpager:
+                        fragment = new FragmentViewPagerView();
+                        break;
+                    case R.id.action_spinner:
+                        fragment = new FragmentSpinnerView();
+                        break;
                     default:
                         binding.drawerLayout.closeDrawers();
                         return false;
