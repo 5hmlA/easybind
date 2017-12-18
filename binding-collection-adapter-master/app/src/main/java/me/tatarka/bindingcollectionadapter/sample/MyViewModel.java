@@ -47,9 +47,9 @@ public class MyViewModel extends ViewModel {
 
     public final JObservableList<Object> items = new JObservableList<Object>(){
         {
-                        add("Header");
-                        add(new ItemRecvViewModel());
-                        add("Header");
+//                        add("Header");
+                        add(new ItemViewModel(0,true));
+//                        add("Header");
         }
     };
 //    public final ObservableList<ItemViewModel> mDataLists = new ObservableArrayList<>();
