@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.tatarka.bindingcollectionadapter.sample" >
+          xmlns:tools="http://schemas.android.com/tools"
+          package="me.tatarka.bindingcollectionadapter.sample">
 
     <application
         android:allowBackup="true"

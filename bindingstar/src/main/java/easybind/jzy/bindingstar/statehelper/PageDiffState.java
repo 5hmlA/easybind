@@ -1,11 +1,12 @@
-package com.jzy.bindingstar.pagingviewmodel.statehelper;
+package easybind.jzy.bindingstar.statehelper;
 
 import android.support.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static com.jzy.bindingstar.pagingviewmodel.statehelper.PageDiffState.*;
+import static easybind.jzy.bindingstar.statehelper.PageDiffState.*;
+
 
 /**
  * @another 江祖赟

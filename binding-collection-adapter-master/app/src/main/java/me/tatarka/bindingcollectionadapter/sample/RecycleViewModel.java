@@ -2,11 +2,10 @@ package me.tatarka.bindingcollectionadapter.sample;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel;
-
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import easybind.jzy.bindingstar.loadmorehelper.BaseLoadmoreViewModel;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -20,21 +19,21 @@ public class RecycleViewModel extends BaseLoadmoreViewModel {
     private JObservableList refreshList = new JObservableList();
 
     public RecycleViewModel(){
-//        mDataLists.add(new ItemRecvViewModel());
+        //        mDataLists.add(new ItemRecvViewModel());
         for(int i = 0; i<6; i++) {
             ItemViewModel object = new ItemViewModel(i, true);
             mDataLists.add(object);
-            refreshList.add(object);
-//            refreshList.add(new ItemViewModel(i, true));
+//            refreshList.add(object);
+            //            refreshList.add(new ItemViewModel(i, true));
         }
-//        refreshList.move(2,0);
-//        for(int i = 0; i<20; i++) {
+        //        refreshList.move(2,0);
+                for(int i = 0; i<20; i++) {
 
         refreshList.add(new ItemViewModel(55, true));
-//        }
-        refreshList.remove(3);
-        refreshList.remove(3);
-        refreshList.remove(0);
+                }
+//        refreshList.remove(3);
+//        refreshList.remove(3);
+//        refreshList.remove(0);
     }
 
     //    @Override
@@ -62,23 +61,19 @@ public class RecycleViewModel extends BaseLoadmoreViewModel {
 
     @Override
     protected void registItemTypes(OnItemBindClass<Object> multipleItems){
-        multipleItems.regist(String.class, me.tatarka.bindingcollectionadapter.sample.BR.item,
-                             R.layout.item_header_footer).regist(ItemRecvViewModel.class,
-                                                                 me.tatarka.bindingcollectionadapter.sample.BR.recvItem,
-                                                                 R.layout.item_recy_test).regist(ItemViewModel.class,
-                                                                                                 me.tatarka.bindingcollectionadapter.sample.BR.item,
-                                                                                                 ItemViewModel.layoutRes);
+        multipleItems.regist(String.class, me.tatarka.bindingcollectionadapter.sample.BR.item, R.layout.item_header_footer)
+                .regist(ItemRecvViewModel.class, me.tatarka.bindingcollectionadapter.sample.BR.recvItem, R.layout.item_recy_test)
+                .regist(ItemViewModel.class, me.tatarka.bindingcollectionadapter.sample.BR.item, ItemViewModel.layoutRes);
     }
 
     @Override
     public void subscribeData(Object orignParam){
         final ArrayList mDataLists = new ArrayList();
         //        mDataLists.add(new ItemRecvViewModel());
-//        for(int i = 0; i<11; i++) {
-//            mDataLists.add(new ItemViewModel(i, true));
-//        }
-        Observable.just(mDataLists).delay(2, TimeUnit.SECONDS).observeOn(
-                AndroidSchedulers.mainThread()).subscribe(new Consumer() {
+        //        for(int i = 0; i<11; i++) {
+        //            mDataLists.add(new ItemViewModel(i, true));
+        //        }
+        Observable.just(mDataLists).delay(2, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer() {
             @Override
             public void accept(Object o) throws Exception{
                 showPageStateSuccess(refreshList);
@@ -88,7 +83,7 @@ public class RecycleViewModel extends BaseLoadmoreViewModel {
 
     @Override
     public void up2LoadMoreData(RecyclerView recyclerView){
-        //        super.up2LoadMoreData(recyclerView);
+//                super.up2LoadMoreData(recyclerView);
         LOG("======== up2LoadMoreData ========");
         if(mDataLists.size()<=3) {
             //                mMoreLoadViewModel.onMoreloadFail(true);

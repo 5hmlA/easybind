@@ -1,23 +1,26 @@
-package com.jzy.bindingstar.pagingviewmodel.loadmorehelper;
+package easybind.jzy.bindingstar.loadmorehelper;
 
+import android.databinding.BaseObservable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
-
-import com.jzy.bindingstar.pagingviewmodel.statehelper.PageDiffState;
-import com.jzy.bindingstar.pagingviewmodel.statehelper.StateDiffViewModel;
 
 import java.util.List;
 
+import easybind.jzy.bindingstar.ScrollChildSwipeRefreshLayout;
+import easybind.jzy.bindingstar.statehelper.PageDiffState;
+import easybind.jzy.bindingstar.statehelper.StateDiffViewModel;
 import me.tatarka.bindingcollectionadapter2.collections.DiffObservableList;
 import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
+import me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 import me.tatarka.bindingcollectionadapter2.recv.LayoutManagers;
 import me.tatarka.bindingcollectionadapter2.view_adapter.LoadMoreWrapperAdapter;
 
-import static com.jzy.bindingstar.pagingviewmodel.loadmorehelper.LoadmoreFootViewModel.wrapperLoadMoreBinding;
+import static easybind.jzy.bindingstar.loadmorehelper.LoadmoreFootViewModel.wrapperLoadMoreBinding;
 import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
 /**
@@ -53,17 +56,20 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
     /**
      * 列表数据{@link #mDataLists} 包括 底部的 loading
      */
-    public final MergeObservableList<Object> godLists = new MergeObservableList<>().insertList(mDataLists).insertItem(
-            mLoadmoreFootViewModel);
+    public final MergeObservableList<Object> godLists = new MergeObservableList<>().insertList(mDataLists).insertItem(mLoadmoreFootViewModel);
 
     /**
      * 注册 不同类型布局 和 对应的class数据类型
      */
     public final OnItemBindClass<Object> multipleItems = wrapperLoadMoreBinding(new OnItemBindClass<>());
+    //======  分页 ====
+    public static final long FIRST_PAGE = 1;
+    public static String CURRENT_SEARCH_KEY = "";
+    private String mLastSearchKey;
+    public long mCurrentPage;
+    DiffObservableList mDiffObservableList = new DiffObservableList(mDataLists);
 
-    {
-        registItemTypes(multipleItems);
-    }
+    protected RecyclerView mRecyclerView;
 
     public LayoutManagers.LayoutManagerFactory layoutManager(){
         return LayoutManagers.linear();
@@ -76,13 +82,27 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
      */
     protected abstract void registItemTypes(OnItemBindClass<Object> multipleItems);
 
+    {
+        registItemTypes(multipleItems);
+    }
+
+    @Override
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom){
+        if(v instanceof RecyclerView) {
+            mRecyclerView = (RecyclerView)v;
+            if(mSwipeRefreshLayout != null) {
+                mSwipeRefreshLayout.setScrollUpChild(mRecyclerView);
+            }
+        }else if(v instanceof SwipeRefreshLayout) {
+            mSwipeRefreshLayout = (ScrollChildSwipeRefreshLayout)v;
+            if(mRecyclerView != null) {
+                mSwipeRefreshLayout.setScrollUpChild(mRecyclerView);
+            }
+        }
+    }
+
     // ========================== 上拉加载 逻辑 ==============================
-    private Object mOrignParam;
-    public static final long FIRST_PAGE = 1;
-    public static String CURRENT_SEARCH_KEY = "";
-    private String mLastSearchKey;
-    public long mCurrentPage;
-    DiffObservableList mDiffObservableList = new DiffObservableList(mDataLists);
+
 
     /**
      * 网络请求参数
@@ -106,6 +126,13 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
 
     protected void theSameSearchKey(String key){ /* 搜索同一个关键字 */ }
 
+    /**
+     * 搜索 关键字 复写方法<br>
+     * <li>{@link #CURRENT_SEARCH_KEY} 会保存 当前的搜索关键字</li>
+     * <li>默认 回掉 {@link #subscribeData(Object)}</li>
+     *
+     * @param key
+     */
     protected void toSearchFromService(String key){
         LOG("=========== toSearchFromService ===========");
         /* 发请求 去搜索关键字吧 */
@@ -131,18 +158,17 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
     @Override
     public void onRefresh(SwipeRefreshLayout swipeRefreshLayout){
         super.onRefresh(swipeRefreshLayout);
-        down2RefreshData();
     }
 
     /**
      * 布局中swipeRefreshView的onRefresh调用
      */
+    @Override
     public void down2RefreshData(){
         mCurrentPage = FIRST_PAGE;
         LOG("=========== down2RefreshData ===========", mCurrentPage);
         //显示 第一页的 loading 状态 下拉刷新 不显示 不然会同时显示 下拉刷新的圆圈
         //        showPageStateLoading();
-        //        mDataLists.clear();
         if(TextUtils.isEmpty(CURRENT_SEARCH_KEY)) {
             //关键字为空 非搜索
             subscribeData(mOrignParam);
@@ -171,19 +197,30 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
     }
 
     /**
-     * 重新 刷新 到 第一页数据
+     * 重新 刷新 到 第一页数据<br>
+     * 更新全部数据 回到第一页<br>
+     * List 的数据元素 建议继承  {@link ExtrasBindViewModel}，当然也可以直接继承{@link BaseObservable}
      *
      * @param newData
      */
-    public void refreshedAllData(List newData){
+    protected final void refreshedAllData(List newData){
+        refreshedAllData(newData, false);
+        hideLoading();
+    }
+
+    public final void refreshedAllData(List newData, boolean detectMoves){
         LOG("=========== refreshedAllData ===========");
         if(mDataLists.isEmpty()) {
             mDataLists.addAll(newData);
         }else {
-            mDiffObservableList.set(mDataLists).update(newData);
+            try {
+                mDiffObservableList.set(mDataLists).detectMoves(detectMoves).update(newData);
+            }catch(ClassCastException e) {
+                LOG("========== 数据包含 非  IRecvDataDiff 的子类 ===========");
+                mDataLists.clear();
+                mDataLists.addAll(newData);
+            }
         }
-//                mDataLists.clear();
-//                mDataLists.addAll(newData);
     }
 
     public void addMoreData(List moreData){
@@ -202,19 +239,30 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
 
     @Override
     public void showPageStateError(@PageDiffState int pageDiffState){
-        super.showPageStateError(pageDiffState);
+        if(mCurrentPage == FIRST_PAGE) {
+            //网络错误等 加载数据失败
+            super.showPageStateError(pageDiffState);
+        }else {
+            //上拉加载 失败
+            mLoadmoreControl.loadMoreFail();
+            switchSwipeRefresh(true);
+        }
     }
 
     @Override
     public void showPageStateError(@PageDiffState int pageDiffState, String errTips){
-        super.showPageStateError(pageDiffState, errTips);
         if(mCurrentPage == FIRST_PAGE) {
             //网络错误等 加载数据失败
-            showPageStateError(pageDiffState);
+            super.showPageStateError(pageDiffState, errTips);
         }else {
             //上拉加载 失败
             mLoadmoreControl.loadMoreFail(errTips);
             switchSwipeRefresh(true);
         }
+    }
+
+    @Override
+    public void onRetry(int layoutState){
+        down2RefreshData();
     }
 }

@@ -4,7 +4,7 @@
 
     <data>
 
-        <import type="com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel" />
+        <import type="android.view.View"/>
         <import type="me.tatarka.bindingcollectionadapter.sample.ItemViewModel" />
 
         <variable
@@ -12,7 +12,7 @@
             type="me.tatarka.bindingcollectionadapter.sample.RecycleViewModel" />
         <variable
             name="viewModel"
-            type="com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel" />
+            type="easybind.jzy.bindingstar.loadmorehelper.BaseLoadmoreViewModel" />
         <variable
             name="listeners"
             type="me.tatarka.bindingcollectionadapter.sample.Listeners" />
@@ -26,6 +26,7 @@
         android:orientation="vertical">
 
         <include
+            android:id="@+id/com_pagelist_layout"
             layout="@layout/com_pagelist_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -49,14 +50,13 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/add"
+                android:id="@+id/add_ad"
                 style="?buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClickListener="@{() -> listeners.onAddItem()}"
                 android:text="Add Item" />
-
             <Button
                 android:id="@+id/remove"
                 style="?buttonBarButtonStyle"

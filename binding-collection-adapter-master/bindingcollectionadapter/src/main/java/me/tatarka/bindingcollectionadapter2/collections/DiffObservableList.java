@@ -17,7 +17,7 @@ public class DiffObservableList<T extends IRecvDataDiff> implements ListUpdateCa
     private final Object LIST_LOCK = new Object();
     private JObservableList mOrignList;
     private boolean detectMoves;
-    private ArrayList<JObservableList.JOnListChangedCallback> mListChangedCallbacks;
+    private ArrayList<JObservableList.JOnListChangedCallback> mListChangedCallbacks = new ArrayList<>(0);
 
     /**
      * Creates a new DiffObservableList of type T.

@@ -1,4 +1,4 @@
-package com.jzy.bindingstar.pagingviewmodel.statehelper;
+package easybind.jzy.bindingstar.statehelper;
 
 /**
  * @another 江祖赟

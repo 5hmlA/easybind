@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply from: 'bintrayUpload.gradle'
 android {
     compileSdkVersion build_versions.target_sdk
     buildToolsVersion build_versions.build_tools
@@ -22,11 +22,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation deps.support.app_compat
     implementation deps.support.recyclerview
-    implementation deps.support.v4
-    implementation deps.constraint_layout
-//    implementation deps.rxbinding
-    api 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    api project(':bindingcollectionadapter')
+    implementation deps.support.app_compat
+    implementation deps.rxbinding
+    implementation deps.rxjava2
+    implementation deps.rx_android
+    implementation deps.jstatelayout
+    implementation 'com.yun.ospl:bindingcollectionadapter:1.0.0'
+//    implementation project(':bindingcollectionadapter')
 }

@@ -5,8 +5,7 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.jzy.bindingstar.pagingviewmodel.loadmorehelper.LoadmoreFootViewModel;
-
+import easybind.jzy.bindingstar.loadmorehelper.LoadmoreFootViewModel;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;

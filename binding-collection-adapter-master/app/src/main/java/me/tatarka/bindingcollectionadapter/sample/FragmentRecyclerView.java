@@ -3,10 +3,14 @@ package me.tatarka.bindingcollectionadapter.sample;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
+
+import com.jzy.bindingstar.databinding.ComPagelistLayoutBinding;
 
 import me.tatarka.bindingcollectionadapter.sample.databinding.RecyclerViewBinding;
 
@@ -27,6 +31,9 @@ public class FragmentRecyclerView extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         RecyclerViewBinding binding = RecyclerViewBinding.inflate(inflater, container, false);
+        Button b = binding.addAd;
+        SwipeRefreshLayout s = binding.comPagelistLayout.jswipeRefrl;
+//        ComPagelistLayoutBinding c = (ComPagelistLayoutBinding)binding.comPagelistLayout;
 //        viewModel.setRecvItemClick(this);
         binding.setRecViewModel(viewModel);
         binding.setListeners(new Listeners(viewModel));

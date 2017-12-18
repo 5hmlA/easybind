@@ -13,6 +13,7 @@ import me.tatarka.bindingcollectionadapter2.collections.IRecvDataDiff;
  * 为每个item绑定一些额外的监听事件
  */
 public abstract  class ExtrasBindViewModel extends BaseObservable implements IRecvDataDiff {
+
     public SparseArray<WeakReference<Object>> extraBindings = new SparseArray<>();
 
     /**
@@ -46,7 +47,6 @@ public abstract  class ExtrasBindViewModel extends BaseObservable implements IRe
     @Override
     public boolean areItemsTheSame(IRecvDataDiff oldData, IRecvDataDiff newData){
         return oldData  == newData;
-//        return oldData.getClass() == newData.getClass();
     }
 
     @Override

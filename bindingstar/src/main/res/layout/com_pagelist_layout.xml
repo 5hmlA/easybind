@@ -3,28 +3,41 @@
         xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <!--通过布局include 设置变量 需要先导入 -->
+        <import type="easybind.jzy.bindingstar.loadmorehelper.BaseLoadmoreViewModel"/>
 
-        <import type="com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout"/>
+        <import type="easybind.jzy.bindingstar.ScrollChildSwipeRefreshLayout"/>
 
         <variable
             name="pageViewModel"
-            type="com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel"/>
+            type="easybind.jzy.bindingstar.loadmorehelper.BaseLoadmoreViewModel"/>
         <!--如果数据是泛型 需要指定数据类型-->
-        <!--type="com.jzy.bindingstar.pagingviewmodel.loadmorehelper.BaseLoadmoreViewModel&lt;Object&gt;"/>-->
+        <!--tycom.jzy.bindingstar.loadmorehelperlper.BaseLoadmoreViewModel&lt;Object&gt;"/>-->
     </data>
 
-    <com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout_wrapper"
+    <jonas.jlayout.MultiStateLayout
+        android:id="@+id/joutter_multl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:onRefresh="@{pageViewModel}">
+        bind:onRetryListener="@{pageViewModel}"
+        bind:showState="@{pageViewModel.pageState}">
 
-        <android.support.v7.widget.RecyclerView
+        <easybind.jzy.bindingstar.ScrollChildSwipeRefreshLayout
+            android:id="@+id/jswipe_refrl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            bind:dataList="@{pageViewModel.godLists}"
-            bind:itemBinding="@{pageViewModel.multipleItems}"
-            bind:layoutManager="@{pageViewModel.layoutManager}"
-            bind:loadmoreControl="@{pageViewModel.mLoadmoreControl}"/>
-    </com.jzy.bindingstar.pagingviewmodel.ScrollChildSwipeRefreshLayout>
+            bind:layoutChange="@{pageViewModel}"
+            android:onRefresh="@{pageViewModel}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/jpage_recyv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                bind:dataList="@{pageViewModel.godLists}"
+                bind:layoutChange="@{pageViewModel}"
+                bind:itemBinding="@{pageViewModel.multipleItems}"
+                bind:layoutManager="@{pageViewModel.layoutManager}"
+                bind:loadmoreControl="@{pageViewModel.mLoadmoreControl}"/>
+        </easybind.jzy.bindingstar.ScrollChildSwipeRefreshLayout>
+    </jonas.jlayout.MultiStateLayout>
 </layout>

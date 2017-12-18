@@ -1,4 +1,4 @@
-package com.jzy.bindingstar.pagingviewmodel.loadmorehelper;
+package easybind.jzy.bindingstar.loadmorehelper;
 
 import android.databinding.Bindable;
 import android.databinding.Observable;
@@ -52,7 +52,7 @@ public class LoadmoreFootViewModel extends ExtrasBindViewModel implements Layout
                 }
             }
         });
-        bindExtra(com.jzy.bindingstar.BR.loadmorelistener, moreloadControl);
+        bindExtra(com.jzy.bindingstar.BR.loadmoreControl, moreloadControl);
     }
 
     /**
