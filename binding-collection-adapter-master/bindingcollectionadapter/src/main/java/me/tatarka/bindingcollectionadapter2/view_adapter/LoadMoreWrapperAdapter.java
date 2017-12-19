@@ -98,6 +98,7 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
         private void setLoadmoreFailed(boolean fail, String tips){
             mLoadFailTips = tips;
             if(!loadmoreFinished && loadmoreFailed != fail) {
+                LOG("OnLoadmoreControl", "跟新底部loading状态: loadmoreFailed", fail);
                 //上拉加载成功和失败的切换
                 loadmoreFailed = fail;
                 notifyPropertyChanged(BR.loadmoreFailed);
@@ -183,14 +184,6 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
 
     public LoadMoreWrapperAdapter(OnLoadmoreControl listener){
         mLoadmoreControl = listener;
-        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount){
-                //adapter插入数据后检测
-                LOG("adapter被检测到插入数据了",itemCount);
-                checkUp2loadMore();
-            }
-        });
     }
 
 
@@ -327,5 +320,12 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
         LOG(TAG, items.size(), " 清除数据 onItemRangeMoved ", itemCount);
         mInLoadingState = false;
         checkUp2loadMore();//删除数据后检查 是否要自动拉取数据
+    }
+
+    @Override
+    public void onMoved(JObservableList ts, int fromPosition, int toPosition){
+        super.onMoved(ts, fromPosition, toPosition);
+        LOG(TAG, items.size(), " 数据移动 onMoved ", fromPosition,toPosition);
+        mInLoadingState = false;
     }
 }
