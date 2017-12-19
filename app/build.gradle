@@ -20,16 +20,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.kotlin.stdlib
-    implementation deps.support.app_compat
-    implementation deps.support.v4
+    implementation deps.support.recyclerview
     implementation deps.support.design
-    testImplementation deps.junit
-    androidTestCompile deps.atsl.runner
-    androidTestCompile deps.espresso.core
-    implementation deps.constraint_layout
+    implementation deps.support.app_compat
+    implementation deps.support.constraint
+    implementation deps.rxbinding
+    implementation deps.jstatelayout
+    implementation project(':bindingcollectionadapter')
+    implementation project(':easybindpagelist')
 }

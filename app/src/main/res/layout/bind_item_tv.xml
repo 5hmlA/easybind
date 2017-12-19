@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="outRecvViewModel"
+            type="jzy.easybind.bindstar.viewmodel.PageRecvViewModel"/>
+
+        <variable
+            name="itemViewModel"
+            type="jzy.easybind.bindstar.viewmodel.ItemViewModel"/>
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{(v)->itemViewModel.clickShow(v,itemViewModel.content)}"
+        android:padding="16dp"
+        android:text="@{itemViewModel.content}"/>
+        <!--android:onLongClick="@{()->outRecvViewModel.deleItem(itemViewModel)}"-->
+</layout>
