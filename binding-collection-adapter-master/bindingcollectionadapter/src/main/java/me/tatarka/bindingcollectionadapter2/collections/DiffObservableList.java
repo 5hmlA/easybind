@@ -8,12 +8,15 @@ import android.support.v7.util.ListUpdateCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
+
 /**
  * An {@link ObservableList} that uses {@link DiffUtil} to calculate and dispatch it's change
  * updates.
  */
 public class DiffObservableList<T extends IRecvDataDiff> implements ListUpdateCallback {
 
+    private static final String TAG = DiffObservableList.class.getSimpleName();
     private final Object LIST_LOCK = new Object();
     private JObservableList mOrignList;
     private boolean detectMoves;
@@ -66,9 +69,12 @@ public class DiffObservableList<T extends IRecvDataDiff> implements ListUpdateCa
     @MainThread
     public void update(List<T> newItems){
         if(newItems instanceof JObservableList) {
+            LOG(TAG,"DiffObservableList #update(list) 检测数据差异-->JOnListChangedCallback-->adapter更新");
             DiffUtil.DiffResult diffResult = doCalculateDiff(mOrignList, newItems);
             mOrignList.change(newItems);//使用新数据  adapter跟新的时候 需要使用到
             diffResult.dispatchUpdatesTo(this);
+        }else {
+            throw new RuntimeException(" list 并非 JObservableList 的子类 不进行差异判断");
         }
     }
 

@@ -50,7 +50,7 @@ public class JObservableList<T> extends ObservableArrayList<T> {
         return set;
     }
 
-    public void move(int fromPosition, int toPosition){
+    public void swap(int fromPosition, int toPosition){
         T toItem = get(toPosition);
         super.set(toPosition, get(fromPosition));
         super.set(fromPosition, toItem);

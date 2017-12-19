@@ -30,8 +30,12 @@ public class Utils {
     public static boolean sInDebug = true;
     private static Context sContext;
 
-    public static void take(Context context){
+    public static void care(Context context){
         sContext = context;
+    }
+
+    public static Context getContext(){
+        return sContext;
     }
 
     /**
@@ -83,9 +87,20 @@ public class Utils {
     /**
      * dip转为PX
      */
-    public static int dp2px(Context context, float dipValue){
-        float fontScale = context.getResources().getDisplayMetrics().density;
+    public static int dp2px(float dipValue){
+        float fontScale = Resources.getSystem().getDisplayMetrics().density;
         return (int)( dipValue*fontScale+0.5f );
+    }
+
+    /**
+     * px转dip
+     * @param context
+     * @param pxValue
+     * @return
+     */
+    public static int px2dp(Context context, float pxValue) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
     public static void LOG(Object... msg){
@@ -98,10 +113,6 @@ public class Utils {
             }
             Log.d(TAG, sb.toString());
         }
-    }
-
-    public static Context getContext(){
-        return sContext;
     }
 
     public static SpannableString hightLightStrParser(@NonNull SpannableString orign, String key, int keyColor){
