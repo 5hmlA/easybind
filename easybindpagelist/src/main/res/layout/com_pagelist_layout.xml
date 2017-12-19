@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <!--通过布局include 设置变量 需要先导入 -->
+        <import type="jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel"/>
+
+        <import type="jzy.easybindpagelist.ScrollChildSwipeRefreshLayout"/>
+
+        <variable
+            name="pageViewModel"
+            type="jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel"/>
+        <!--如果数据是泛型 需要指定数据类型-->
+        <!--tycom.jzy.bindingstar.loadmorehelperlper.BaseLoadmoreViewModel&lt;Object&gt;"/>-->
+    </data>
+
+    <jonas.jlayout.MultiStateLayout
+        android:id="@+id/joutter_multl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        bind:onRetryListener="@{pageViewModel}"
+        bind:showState="@{pageViewModel.pageState}">
+
+        <jzy.easybindpagelist.ScrollChildSwipeRefreshLayout
+            android:id="@+id/jswipe_refrl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            bind:isRefreshing="@{pageViewModel.down2Refreshing}"
+            bind:enableRefresh="@{pageViewModel.enableSwipeRefresh}"
+            bind:layoutChange="@{pageViewModel}"
+            android:onRefresh="@{pageViewModel}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/jpage_recyv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                bind:dataList="@{pageViewModel.godLists}"
+                bind:layoutChange="@{pageViewModel}"
+                bind:itemBinding="@{pageViewModel.multipleItems}"
+                bind:layoutManager="@{pageViewModel.layoutManager}"
+                bind:loadmoreControl="@{pageViewModel.mLoadmoreControl}"/>
+        </jzy.easybindpagelist.ScrollChildSwipeRefreshLayout>
+    </jonas.jlayout.MultiStateLayout>
+</layout>
