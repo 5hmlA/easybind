@@ -163,6 +163,16 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
          * loadmoreFailed=true && loadmoreFinished=false<br>
          * <li>jfoot_loadmore_holder.xml 布局中的点击触发</li>
          */
+        public final void retryLoadMore(){
+            loadmoreSucceed();
+            onLoadmoreRetry();
+        }
+
+        /**
+         * 底部loading的重试 按钮<br>
+         * loadmoreFailed=true && loadmoreFinished=false<br>
+         * <li>jfoot_loadmore_holder.xml 布局中的点击触发</li>
+         */
         public void onLoadmoreRetry(){
             loadmoreSucceed();
             onUp2Loadmore(null);
@@ -319,13 +329,14 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
         super.onItemRangeRemoved(ts, positionStart, itemCount);
         LOG(TAG, items.size(), " 清除数据 onItemRangeMoved ", itemCount);
         mInLoadingState = false;
+        mLoadmoreControl.loadmoreSucceed();//删除之后 重新检测上拉加载
         checkUp2loadMore();//删除数据后检查 是否要自动拉取数据
     }
 
     @Override
     public void onMoved(JObservableList ts, int fromPosition, int toPosition){
         super.onMoved(ts, fromPosition, toPosition);
-        LOG(TAG, items.size(), " 数据移动 onMoved ", fromPosition,toPosition);
+        LOG(TAG, items.size(), " 数据移动 onMoved ", fromPosition, toPosition);
         mInLoadingState = false;
     }
 }

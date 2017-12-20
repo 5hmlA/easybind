@@ -1,7 +1,7 @@
 /**
-* Shared file between builds so that they can all use the same dependencies and
-* maven repositories.           versions.kotlin = "1.1.4-2"
-**/
+ * Shared file between builds so that they can all use the same dependencies and
+ * maven repositories.           versions.kotlin = "1.1.4-2"
+ **/
 ext.deps = [:]
 def versions = [:]
 versions.arch = hasProperty("ARCH_VERSION") ? getProperty("ARCH_VERSION") : "1.0.0"
@@ -30,11 +30,15 @@ versions.hamcrest = "1.3"
 versions.kotlin = "1.2.0"
 versions.paging = "1.0.0-alpha3"
 versions.constraint = "1.0.2"
+versions.gson = "2.8.2"
+versions.jtabstrip = "1.6.8-beta"
+versions.logger = "2.1.1"
 
-versions.jstatelayout="1.7.0-visi"
-versions.jtabstrip="1.6.8-beta@aar"
-versions.bindingcollectionadapter="1.0.0"
+versions.jstatelayout="0.1.13"
+versions.jtabstrip="0.1.13"
+versions.bindingcollectionadapter="1.0.1"
 versions.bindingstar="0.1.14"
+versions.bindPagelist="0.1.15"
 
 def deps = [:]
 
@@ -127,10 +131,15 @@ deps.fresco_webp = "com.facebook.fresco:webpsupport:$versions.fresco"
 deps.hamcrest = "org.hamcrest:hamcrest-all:$versions.hamcrest"
 deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin"
 
+deps.gson = "com.google.code.gson:gson:$versions.gson"
+deps.logger = "com.orhanobut:logger:$versions.logger"
+
 deps.jstatelayout = "com.yun.ospl:JstateLayout:$versions.jstatelayout"
 deps.jtabstrip = "com.yun.ospl:jtabstrip:$versions.jtabstrip"
 deps.bindingcollectionadapter = "com.yun.ospl:bindingcollectionadapter:$versions.bindingcollectionadapter"
 deps.bindingstar = "com.yun.ospl:bindingstar:$versions.bindingstar"
+deps.bindPagelist = "com.yun.ospl:easybindpagelist:$versions.bindPagelist"
+deps.jtabstrip = "com.yun.ospl:jtabstrip:$versions.jtabstrip"
 
 ext.deps = deps
 

@@ -27,7 +27,7 @@ import java.util.regex.PatternSyntaxException;
  */
 public class Utils {
     private static final String TAG = "EasyBinding";
-    public static boolean sInDebug = true;
+    public static boolean sInDebug = false;
     private static Context sContext;
 
     public static void care(Context context){

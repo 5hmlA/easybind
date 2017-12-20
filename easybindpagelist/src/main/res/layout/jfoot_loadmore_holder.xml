@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackground"
-                android:onClick="@{()->loadmoreFoot.moreload_fail?(loadmoreFoot.moreload_finish?void:loadmoreControl.onLoadmoreRetry()):void}"
+                android:onClick="@{()->loadmoreFoot.moreload_fail?(loadmoreFoot.moreload_finish?void:loadmoreControl.retryLoadMore()):void}"
                 android:padding="@dimen/normal_16dp"
                 android:text="@{loadmoreFoot.mTips??(loadmoreFoot.moreload_fail?(loadmoreFoot.moreload_finish?@string/onmore_loadfinish:@string/onmore_retry):@string/onmore_loading)}"
                 android:textSize="15dp"/>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="jtheme">
+        <attr name="jpressedColor" format="color"/>
+        <attr name="jcheckedColor" format="color"/>
+        <attr name="jbackgroundColor" format="color"/>
+        <attr name="jextraColor" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="ForegroundImageView">
+        <attr name="android:foreground"/>
+    </declare-styleable>
+
+    <declare-styleable name="jtitlebar">
+        <attr name="leftIcon" format="reference"/>
+        <attr name="rightIcon" format="reference"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="textColor" format="reference"/>
+        <attr name="text" format="string"/>
+        <attr name="fitsSystemWindows" format="boolean"/>
+    </declare-styleable>
+    <!-- 自定义星星属性 -->
+    <declare-styleable name="jstar">
+        //星星数量
+        <attr format="integer" name="starsNum"></attr>
+        //星星宽度
+        <attr format="dimension" name="starWidth"></attr>
+        //星星高度
+        <attr format="dimension" name="starHeight"></attr>
+        //星星间距
+        <attr format="dimension" name="starDistance"></attr>
+        //星星背景
+        <attr format="reference" name="starBackground"></attr>
+        //星星变化背景
+        <attr format="reference" name="starDrawBackground"></attr>
+        //控件是否可以点击
+        <attr format="boolean" name="starClickable"></attr>
+
+    </declare-styleable>
+</resources>

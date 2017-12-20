@@ -1,5 +1,7 @@
 <resources>
-    <string name="onmore_loading">加载中...</string>
-    <string name="onmore_retry">点击重试</string>
-    <string name="onmore_loadfinish">___________ 我是有底线的 ___________</string>
+    <string name="app_name">Yun-Library</string>
+    <string name="dialog_confirm">确定</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="jlib_share_title">分享至</string>
+
 </resources>

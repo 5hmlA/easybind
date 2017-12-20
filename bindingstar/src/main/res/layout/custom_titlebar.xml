@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:fitsSystemWindows="true">
+
+    <FrameLayout
+        android:id="@+id/jtitlebar_pading_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/jtitlebar_real_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_below="@+id/jtitlebar_pading_status"
+        android:foreground="?selectableItemBackground">
+
+        <com.blueprint.widget.JDimImageView
+            android:id="@+id/jtitlebar_left_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:paddingEnd="@dimen/view_pading_forclic"
+            android:paddingLeft="@dimen/text_margin"
+            android:paddingRight="@dimen/view_pading_forclic"
+            android:paddingStart="@dimen/text_margin"
+            tools:src="@drawable/ic_search_white_24dp"/>
+
+        <com.blueprint.widget.JDimImageView
+            android:id="@+id/jtitlebar_right_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:paddingEnd="@dimen/text_margin"
+            android:paddingLeft="@dimen/view_pading_forclic"
+            android:paddingRight="@dimen/text_margin"
+            android:paddingStart="@dimen/view_pading_forclic"
+            tools:src="@drawable/ic_search_white_24dp"/>
+
+        <TextView
+            android:id="@+id/jtitlebar_title"
+            style="@style/jmarqueue"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:paddingEnd="30dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingStart="30dp"
+            tools:text="title"/>
+        <!--android:layout_toEndOf="@+id/jtitlebar_left_button"-->
+        <!--android:layout_toLeftOf="@+id/jtitlebar_right_button"-->
+        <!--android:layout_toRightOf="@+id/jtitlebar_left_button"-->
+        <!--android:layout_toStartOf="@+id/jtitlebar_right_button"-->
+    </RelativeLayout>
+</merge>

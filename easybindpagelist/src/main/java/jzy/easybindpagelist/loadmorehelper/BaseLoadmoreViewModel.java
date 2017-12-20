@@ -40,7 +40,6 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
 
         @Override
         public void onLoadmoreRetry(){
-            loadmoreSucceed();//底部loading框 转换为loading状态
             retryUp2LoadMoreData(null);
         }
     };

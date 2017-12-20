@@ -3,9 +3,8 @@
         xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <!--通过布局include 设置变量 需要先导入 -->
-        <import type="jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel"/>
-
+        <!--// Error:(11) Error parsing XML: duplicate attribute -->
+        <!--//这个错误的原因是  layout 标签和布局标签 使用了 重复的命名空间 命名空间重复产生了冲突 layout下的命名空间会被合并到最外层布局里面-->
         <import type="jzy.easybindpagelist.ScrollChildSwipeRefreshLayout"/>
 
         <variable
@@ -26,18 +25,18 @@
             android:id="@+id/jswipe_refrl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            bind:isRefreshing="@{pageViewModel.down2Refreshing}"
+            android:onRefresh="@{pageViewModel}"
             bind:enableRefresh="@{pageViewModel.enableSwipeRefresh}"
-            bind:layoutChange="@{pageViewModel}"
-            android:onRefresh="@{pageViewModel}">
+            bind:isRefreshing="@{pageViewModel.down2Refreshing}"
+            bind:layoutChange="@{pageViewModel}">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/jpage_recyv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 bind:dataList="@{pageViewModel.godLists}"
-                bind:layoutChange="@{pageViewModel}"
                 bind:itemBinding="@{pageViewModel.multipleItems}"
+                bind:layoutChange="@{pageViewModel}"
                 bind:layoutManager="@{pageViewModel.layoutManager}"
                 bind:loadmoreControl="@{pageViewModel.mLoadmoreControl}"/>
         </jzy.easybindpagelist.ScrollChildSwipeRefreshLayout>

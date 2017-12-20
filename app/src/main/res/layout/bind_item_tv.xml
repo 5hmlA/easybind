@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{(v)->itemViewModel.clickShow(v,itemViewModel.content)}"
+        android:onClick="@{()->outRecvViewModel.deleItem(itemViewModel)}"
         android:padding="16dp"
         android:text="@{itemViewModel.content}"/>
         <!--android:onLongClick="@{()->outRecvViewModel.deleItem(itemViewModel)}"-->
