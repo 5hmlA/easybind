@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="itemstr"
+            type="String"/>
+    </data>
+
+   <TextView
+       android:layout_width="match_parent"
+       android:padding="@dimen/normal_16dp"
+       android:layout_marginTop="2dp"
+       android:background="#10000000"
+       android:text="@{itemstr}"
+       android:layout_height="wrap_content"/>
+</layout>

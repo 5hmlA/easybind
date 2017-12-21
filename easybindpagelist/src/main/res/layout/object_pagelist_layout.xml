@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ 列表数据为ExtrasBindViewModel类型 include该布局
-  ~ ViewModel 必须jzy.easybindpagelist.loadmorehelper.LoadMoreViewModelel
-  ~                     jzy.easybindpagelist.loadmorehelper.AbsLoadMoreViewModeldelodel<ExtrasBindViewModel>
-  ~                     jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel<ExtrasBindViewModel>
+  ~ 列表数据为Object类型 include该布局
+  ~ ViewModel 必须继承自 jzy.easybindpagelist.loadmorehelper.LoadMoreObjectViewModel
+  ~                     jzy.easybindpagelist.loadmorehelper.AbsLoadMoreViewModeldelodel<Object>
+  ~                     jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel<Object>
   ~  <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -15,18 +15,15 @@
         xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
-
-        <import type="me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel"/>
         <!--// Error:(11) Error parsing XML: duplicate attribute -->
         <!--//这个错误的原因是  layout 标签和布局标签 使用了 重复的命名空间 命名空间重复产生了冲突 layout下的命名空间会被合并到最外层布局里面-->
         <import type="jzy.easybindpagelist.ScrollChildSwipeRefreshLayout"/>
 
         <variable
             name="pageViewModel"
-            type="jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel&lt;ExtrasBindViewModel&gt;"/>
-        <!--tyjzy.easybindpagelist.loadmorehelper.LoadMoreViewModelel2"/>-->
-        <!--如果数据是泛型 需要指定数据类型 使用的时候泛型必须要匹配-->
-        <!--type="jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel&lt;Object&gt;"/>-->
+            type="jzy.easybindpagelist.loadmorehelper.BaseLoadmoreViewModel&lt;Object&gt;"/>
+        <!--如果数据是泛型 需要指定数据类型-->
+        <!--type="jzy.easybindpagelist.loadmorehelper.LoadMoreObjectViewModel"/>-->
     </data>
 
     <jonas.jlayout.MultiStateLayout

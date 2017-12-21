@@ -12,6 +12,8 @@ import android.view.MenuItem;
 
 import jzy.easybind.R;
 import jzy.easybind.bindstar.frgmt.EasyRecvFrgmt;
+import jzy.easybind.bindstar.frgmt.EasyRecvObFrgmt;
+import jzy.easybind.bindstar.frgmt.EasyVpFrgmt;
 import jzy.easybind.databinding.BindActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,19 +39,19 @@ public class MainActivity extends AppCompatActivity {
         NavigationView.OnNavigationItemSelectedListener listener = new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                Fragment fragment = new EasyRecvFrgmt();
+                Fragment fragment = null;
                 switch (menuItem.getItemId()) {
                     case R.id.action_listview:
-//                        fragment = new FragmentListView();
+                        fragment = new EasyRecvObFrgmt();
                         break;
                     case R.id.action_recyclerview:
                         fragment = new EasyRecvFrgmt();
                         break;
                     case R.id.action_viewpager:
-//                        fragment = new FragmentViewPagerView();
+                        fragment = new EasyVpFrgmt();
                         break;
                     case R.id.action_spinner:
-//                        fragment = new FragmentSpinnerView();
+                        fragment = new EasyRecvFrgmt();
                         break;
                     default:
                         binding.drawerLayout.closeDrawers();

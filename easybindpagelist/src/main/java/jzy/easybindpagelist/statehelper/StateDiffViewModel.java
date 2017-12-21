@@ -10,6 +10,7 @@ import jonas.jlayout.OnStateClickListener;
 import jzy.easybindpagelist.ScrollChildSwipeRefreshLayout;
 import me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel;
 
+import static jonas.jlayout.MultiStateLayout.LayoutState.STATE_UNMODIFY;
 import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
 /**
@@ -21,6 +22,10 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
 
     public CharSequence pageStateMsg;
     public ObservableInt pageState = new ObservableInt(MultiStateLayout.LayoutState.STATE_LOADING);
+    public ObservableInt pageLoadingRes = new ObservableInt(STATE_UNMODIFY);
+    public ObservableInt pageEmptyRes = new ObservableInt(STATE_UNMODIFY);
+    public ObservableInt pageErrorRes = new ObservableInt(STATE_UNMODIFY);
+    public ObservableInt pageLoadingColorInt = new ObservableInt(STATE_UNMODIFY);
     protected Object mOrignParam;
     protected ScrollChildSwipeRefreshLayout mSwipeRefreshLayout;
     /**
@@ -29,9 +34,26 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
     public ObservableBoolean down2Refreshing = new ObservableBoolean(false);
     public ObservableBoolean enableSwipeRefresh = new ObservableBoolean(true);
 
+    {
+        //构造代码块    执行顺序 父类--子类
+        customMultiStateLayoutRes();
+    }
+
+    /**
+     * 自定义 多状态布局的 不同状态的 布局id
+     * <li>{@link #pageLoadingRes}</li>
+     * <li>{@link #pageEmptyRes}</li>
+     * <li>{@link #pageErrorRes}</li>
+     * <li>{@link #pageLoadingColorInt}</li>
+     */
+    public void customMultiStateLayoutRes(){
+
+    }
+
     /**
      * 由 view 发起请求数据<br>
-     *     <b>主要是保存 原始请求参数 下拉上拉加载数据的时候需要用到</b>
+     * <b>主要是保存 原始请求参数 下拉上拉加载数据的时候需要用到</b>
+     *
      * @param orignParam
      */
     public void subscribeData(Object orignParam){
@@ -41,7 +63,9 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
 
     /**
      * 实际请求数据 实现逻辑<br>
-     *     <b>下拉刷新，上拉加载 都是回掉该方法 请求数据的</b>
+     * {@link #subscribeData(Object)}保留 请求参数之后 会回掉
+     * <b>下拉刷新，上拉加载 都是回掉该方法 请求数据的</b>
+     *
      * @param orignParam
      */
     public abstract void onSubscribeData(Object orignParam);
@@ -97,7 +121,7 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
     public void showPageStateError(@PageDiffState int pageDiffState, String errTips){
         //底部的 loading 提示(loading,empty,error)
         pageStateMsg = errTips;
-//        pageStateMsg = Utils.hightLightStrParser(new SpannableString(errTips), errTips, Color.RED);
+        //        pageStateMsg = Utils.hightLightStrParser(new SpannableString(errTips), errTips, Color.RED);
         showPageStateError(pageDiffState);
     }
 

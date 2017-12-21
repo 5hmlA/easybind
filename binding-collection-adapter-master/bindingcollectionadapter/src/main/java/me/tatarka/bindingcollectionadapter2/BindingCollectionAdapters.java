@@ -110,7 +110,7 @@ public class BindingCollectionAdapters {
     @BindingAdapter(value = {"layoutManager", "itemBinding", "dataList", "adapter", "itemIds", "viewHolder", "loadmoreControl"}, requireAll = false)
     public static <T> void setAdapter(RecyclerView recyclerView,
                                       LayoutManagers.LayoutManagerFactory layoutManagerFactory,
-                                      ItemBinding<T> itemBinding, JObservableList<T> items, BindingRecyclerViewAdapter<T> adapter,
+                                      ItemBinding<T> itemBinding, JObservableList items, BindingRecyclerViewAdapter adapter,
                                       BindingRecyclerViewAdapter.ItemIds<? super T> itemIds,
                                       BindingRecyclerViewAdapter.ViewHolderFactory viewHolderFactory,
                                       LoadMoreWrapperAdapter.OnLoadmoreControl loadmoreControl){

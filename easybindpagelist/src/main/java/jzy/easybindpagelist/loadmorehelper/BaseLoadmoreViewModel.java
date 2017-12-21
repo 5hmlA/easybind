@@ -9,10 +9,12 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import jonas.jlayout.MultiStateLayout;
 import jzy.easybindpagelist.ScrollChildSwipeRefreshLayout;
 import jzy.easybindpagelist.statehelper.PageDiffState;
 import jzy.easybindpagelist.statehelper.StateDiffViewModel;
 import me.tatarka.bindingcollectionadapter2.collections.DiffObservableList;
+import me.tatarka.bindingcollectionadapter2.collections.IRecvDataDiff;
 import me.tatarka.bindingcollectionadapter2.collections.JObservableList;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
 import me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel;
@@ -24,10 +26,10 @@ import static jzy.easybindpagelist.loadmorehelper.LoadmoreFootViewModel.wrapperL
 import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
 /**
- * 为啥 不用泛型 因为 布局里面必须要指定泛型类型 鉴于要接受不同布局 也就时任意数据对象
- * 所以 就固定 为object类型<br>
+ * @anthor <a href="https://github.com/ZuYun">江祖赟</a>
+ * @see
  */
-public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Object>> {
+public abstract class BaseLoadmoreViewModel<ID> extends StateDiffViewModel<List<ID>> {
 
     /**
      * 上拉加载 控制器{ 上拉加载成功/失败/结束/重启}
@@ -48,44 +50,67 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
      * 底部 loadmore 布局的viewModel
      */
     protected final LoadmoreFootViewModel mLoadmoreFootViewModel = new LoadmoreFootViewModel(mLoadmoreControl);
-    /**
-     * 列表 项目 数据 不包括 底部加载布局
-     */
-    public JObservableList mDataLists = new JObservableList<>();
 
     /**
-     * 列表数据{@link #godLists} 在处理上拉加载的ViewModel 中 主要包括两部分:1, 界面的多种类数据. 2, 底部的 上拉加载提示loading
+     * 数据容器必须是JObservableList类<br>
+     * <b>《接口返回的集合数据必须是{@link ExtrasBindViewModel}的子类 》</b><br>
+     * <b>《接口返回的集合数据被添加到{@link #mDataLists}JObservableList通过changecallback通知adapter增删改 》</b><br>
+     * <b>《对RecycleView列表的增删改操作只需要对{@link #mDataLists}执行增删改即可 》</b>
+     */
+    public JObservableList<ID> mDataLists = new JObservableList<>();
+
+    /**
+     * 列表数据容器{@link #godLists} 在处理上拉加载的ViewModel 中<br>
+     * <b>主要包括两部分:1, 界面的多种类数据{@link #mDataLists}. 2, 底部的 上拉加载提示loading</b>
      * <li><b>{@link #mDataLists} 用来收集存储 展示的所有有效数据(不同类型布局)</b></li>
      * <li><b>{@link #mLoadmoreFootViewModel} 就是底部的上拉加载提示 提示的各种状态(loading,error,finish)主要由
      * {@link LoadMoreWrapperAdapter.OnLoadmoreControl}控制,该控制器主要控制上拉加载的状态</b></li>
      */
-    public final MergeObservableList<Object> godLists = new MergeObservableList<>().insertList(mDataLists).insertItem(mLoadmoreFootViewModel);
+    public final MergeObservableList godLists = new MergeObservableList().insertList(mDataLists).insertItem(mLoadmoreFootViewModel);
 
     /**
-     * 注册 不同类型布局 和 对应的class数据类型
+     * 注册 不同类型布局及其布局变量ID(data binding传数据给布局的方式通过BR.id方式) 和 对应的class数据类型
      */
-    public final OnItemBindClass<Object> multipleItems = wrapperLoadMoreBinding(new OnItemBindClass<>());
+    public final OnItemBindClass<ID> multipleItems = wrapperLoadMoreBinding(new OnItemBindClass<>());
     //======  分页 ====
     public static final long FIRST_PAGE = 1;
+    /**
+     * 静态全局的搜索关键字，简化搜索开发，偷个懒~
+     */
     public static String CURRENT_SEARCH_KEY = "";
+    /**
+     * 存储上一次搜索的关键字，主要用于判断多次执行的搜索动作的关键字是不是同一个
+     */
     private String mLastSearchKey;
+    /**
+     * 当前页码，调接口传参需要
+     */
     public long mCurrentPage = FIRST_PAGE;
+
+    /**
+     * 用于下拉刷新全部数据的时候 比较数据差异
+     */
     DiffObservableList mDiffObservableList = new DiffObservableList(mDataLists);
 
     protected RecyclerView mRecyclerView;
+    protected MultiStateLayout mMultiStateLayout;
 
+    /**
+     * 不同的layoutmanager复写该方法即可
+     * @return
+     */
     public LayoutManagers.LayoutManagerFactory layoutManager(){
         return LayoutManagers.linear();
     }
 
     /**
      * 注册 不同的 item 类型<br>
-     *     缺点是每个item只能绑定一种数据变量 (类--布局--变量)<br>
-     *         <b>让各自的item数据 去绑定 多余的变量 那么该item的数据 类(类--布局--变量) 必须继承自{@link ExtrasBindViewModel}</b>
+     * 缺点是每个item只能绑定一种数据变量 (类--布局--变量)<br>
+     * <b>让各自的item数据 去绑定 多余的变量 那么该item的数据 类(类--布局--变量) 必须继承自{@link ExtrasBindViewModel}</b>
      *
      * @param multipleItems
      */
-    protected abstract void registItemTypes(OnItemBindClass<Object> multipleItems);
+    protected abstract void registItemTypes(OnItemBindClass<ID> multipleItems);
 
     {
         registItemTypes(multipleItems);
@@ -107,6 +132,8 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
             if(mRecyclerView != null) {
                 mSwipeRefreshLayout.setScrollUpChild(mRecyclerView);
             }
+        }else if(v instanceof MultiStateLayout) {
+            mMultiStateLayout = (MultiStateLayout)v;
         }
     }
 
@@ -130,7 +157,7 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
         mOrignParam = orignParam;
     }
 
-    private void checkOrignParam(){
+    protected void checkOrignParam(){
         if(mOrignParam == null) {
             throw new RuntimeException(" oops! you need to putOrignParam(orignParam) in onSubscribeData(orignParam) ...you have to");
         }
@@ -213,7 +240,7 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
     }
 
     @Override
-    public void showPageStateSuccess(List listData){
+    public void showPageStateSuccess(List<ID> listData){
         super.showPageStateSuccess(listData);
         //子类注意重写 addMoreData逻辑 不然一直可以无限上拉加载
         if(mCurrentPage == FIRST_PAGE) {
@@ -230,38 +257,43 @@ public abstract class BaseLoadmoreViewModel extends StateDiffViewModel<List<Obje
      *
      * @param newData
      */
-    protected final void refreshedAllData(List newData){
+    protected final void refreshedAllData(List<ID> newData){
         refreshedAllData(newData, false);
     }
 
-    public void refreshedAllData(List newData, boolean detectMoves){
+    /**
+     * 只有在 newData的元素是{@link IRecvDataDiff}的子类时 detectMoves 才有效
+     * @param newData
+     * @param detectMoves
+     */
+    protected void refreshedAllData(List<ID> newData, boolean detectMoves){
         checkOrignParam();
-        LOG("=========== refreshedAllData ===========",newData.size());
+        LOG("=========== refreshedAllData ===========", newData.size());
         if(mDataLists.isEmpty()) {
             mDataLists.addAll(newData);
         }else {
-            try {
-                mDiffObservableList.set(mDataLists).detectMoves(detectMoves).update(newData);
-            }catch(Exception e) {
-                LOG("========== 数据包含 非  IRecvDataDiff 的子类 ===========",e.getMessage(),e);
-                mDataLists.clear();
-                mDataLists.addAll(newData);
-            }
+            mDataLists.clear();
+            mDataLists.addAll(newData);
+            //ID不一定是 IRecvDataDiff 的子类
+//            if(!mDiffObservableList.set(mDataLists).detectMoves(detectMoves).update(newData)) {
+//                mDataLists.clear();
+//                mDataLists.addAll(newData);
+//            }
         }
         hideLoading();
     }
 
-    public void addMoreData(List moreData){
+    public void addMoreData(List<ID> moreData){
         addMoreData(moreData, true, null);
     }
 
-    public void addMoreData(List moreData, boolean hasNext, String tips){
+    public void addMoreData(List<ID> moreData, boolean hasNext, String tips){
         LOG("=========== addMoreData ===========", hasNext, tips);
         mLoadmoreControl.setLoadmoreFinished(!hasNext, tips);//有下一页 finish就是false不结束
         mDataLists.addAll(moreData);
     }
 
-    public void addMoreData(List moreData, boolean hasNext){
+    public void addMoreData(List<ID> moreData, boolean hasNext){
         addMoreData(moreData, hasNext, null);
     }
 

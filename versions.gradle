@@ -34,7 +34,7 @@ versions.gson = "2.8.2"
 versions.jtabstrip = "1.6.8-beta"
 versions.logger = "2.1.1"
 
-versions.jstatelayout="0.1.13"
+versions.jstatelayout="0.1.11"
 versions.jtabstrip="0.1.13"
 versions.bindingcollectionadapter="1.0.1"
 versions.bindingstar="0.1.14"

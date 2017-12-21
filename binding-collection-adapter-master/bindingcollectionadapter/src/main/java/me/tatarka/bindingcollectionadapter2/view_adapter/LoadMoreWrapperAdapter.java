@@ -22,7 +22,7 @@ import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
  * 变化 依赖自己的监听器转发给 {@link LoadMoreWrapperAdapter} 使 adapter 在变化中 处理对应的增删改
  * </b></li>
  */
-public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
+public class LoadMoreWrapperAdapter extends BindingRecyclerViewAdapter<Object> {
 
     private static final String TAG = LoadMoreWrapperAdapter.class.getSimpleName();
     private OnLoadmoreControl mLoadmoreControl;
@@ -315,7 +315,7 @@ public class LoadMoreWrapperAdapter<T> extends BindingRecyclerViewAdapter<T> {
     }
 
     @Override
-    public void onItemRangeInserted(JObservableList<T> ts, int positionStart, int itemCount){
+    public void onItemRangeInserted(JObservableList<Object> ts, int positionStart, int itemCount){
         super.onItemRangeInserted(ts, positionStart, itemCount);
         mInLoadingState = false;
         //上拉加载成功 一定是插入数据 不会删改数据

@@ -1,38 +1,59 @@
 package jzy.easybindpagelist.loadmorehelper;
 
+import android.databinding.Observable;
+
+import java.util.HashMap;
 import java.util.List;
 
-import jzy.easybindpagelist.statehelper.PageDiffState;
-import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
+import me.tatarka.bindingcollectionadapter2.itembindings.ExtrasBindViewModel;
+
+import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
 
 /**
  * @another 江祖赟
  * @date 2017/12/18.
- * view 中 第一次发起数据请求调用 {@link #subscribeData(Object)}<br>
- * viewModel 中实际请求网络接口需要实现 {@link #onSubscribeData(Object)}<br>
+ * view 中 第一次发起数据请求调用 {@link #toSubscribeData(HashMap)} <br>
+ * viewModel 中实际请求网络接口需要实现 {@link #toGetData(HashMap)}<br>
  * {@link #onSubscribeData(Object)}拿到数据成功之后 根据结果调用{@link #refreshedAllData(List)},{@link #addMoreData(List, boolean)}<br>
+ * <b>接口返回的数据列表的javaBean需要更新对应的item界面必须继承{@link Observable},使用LoadMoreViewModel2必须继承自{@link ExtrasBindViewModel}</b>
  */
-public abstract class LoadMoreViewModel extends BaseLoadmoreViewModel {
+public abstract class LoadMoreViewModel extends AbsLoadMoreViewModel<ExtrasBindViewModel> {
 
+    private HashMap mMapParam;
+
+    public final void toSubscribeData(HashMap mapParam){
+        putOrignParam(mapParam);
+        mMapParam = mapParam;
+        toGetData(mMapParam);
+    }
 
     /**
-     * 注册 列表中使用到的 数据类型和布局文件 {@link OnItemBindClass#regist(Class, int, int)}(参数：类型，布局参数变量，布局)
-     *
-     * @param multipleItems
+     * {@link #subscribeData(Object)}保留 请求参数之后 会回掉
+     * @param orignParam
      */
     @Override
-    protected abstract void registItemTypes(OnItemBindClass<Object> multipleItems);
+    public void onSubscribeData(Object orignParam){
+        toGetData(mMapParam);
+    }
+
+    /**
+     * 界面 第一次发起请求 调用 {@link #toSubscribeData(HashMap)}
+     */
+    @Override
+    public final void subscribeData(Object orignParam){
+        super.subscribeData(orignParam);
+    }
 
     /**
      * 调用接口 获取数据
      * <p>
      * <B>下拉刷新</B><br>
-     * 下拉刷新 会自动调用 {@link #down2RefreshData()},mCurrentPage会重置为初值---》回掉{@link #onSubscribeData(Object)}
+     * 下拉刷新 会自动调用 {@link #down2RefreshData()},mCurrentPage会重置为初值---》回掉{@link #subscribeData(Object)}
      * </p>
      * <p>
      * <b> 上拉加载更多</b><br>
      * 参数 当前页码 {@link #mCurrentPage}直接使用 父类有自动增减
-     * <br>上拉之后 {@link #mCurrentPage}自增，同时回掉{@link #onSubscribeData(Object)}
+     * <br>上拉之后 {@link #mCurrentPage}自增，同时回掉{@link #subscribeData(Object)}
      * </p>
      * <B>拿到数据后需要子类处理</B>
      * <li>数据完整正常 <br>
@@ -40,11 +61,22 @@ public abstract class LoadMoreViewModel extends BaseLoadmoreViewModel {
      * 如果 不是 第一页数据 调用{@link #addMoreData(List, boolean)}同时传入是否还有下一页数据<br>
      * </li>
      * <li>数据异常(空/网络异常) ，直接调用{@link #showPageStateError(int)},或者 {@link #showPageStateError(int, String)}
-     * <br>要显示的错误状态{PAGE_STATE_EMPTY,PAGE_STATE_EMPTY}具体看{@link PageDiffState}</li>
-     *
-     * @param orignParam
+     * <br>要显示的错误状态{PAGE_STATE_EMPTY,PAGE_STATE_EMPTY}具体看{@link jzy.easybindpagelist.statehelper.PageDiffState}</li>
      */
-    @Override
-    public abstract void onSubscribeData(Object orignParam);
+    public abstract void toGetData(HashMap mapParam);
 
+    protected final void refreshedAllData(List<ExtrasBindViewModel> newData, boolean detectMoves){
+        checkOrignParam();
+        LOG("=========== refreshedAllData ===========", newData.size());
+        if(mDataLists.isEmpty()) {
+            mDataLists.addAll(newData);
+        }else {
+            //计算差异
+            if(!mDiffObservableList.set(mDataLists).detectMoves(detectMoves).update(newData)) {
+                mDataLists.clear();
+                mDataLists.addAll(newData);
+            }
+        }
+        hideLoading();
+    }
 }

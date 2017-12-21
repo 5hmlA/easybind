@@ -10,7 +10,8 @@ import me.tatarka.bindingcollectionadapter2.collections.IRecvDataDiff;
 /**
  * @another 江祖赟
  * @date 2017/12/15.
- * 为每个item绑定一些额外的监听事件
+ * 为每个item绑定一些额外的监听事件<br>
+ *     直接可以操作布局变更
  */
 public abstract  class ExtrasBindViewModel extends BaseObservable implements IRecvDataDiff {
 
