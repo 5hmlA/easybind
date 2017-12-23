@@ -379,7 +379,6 @@ public class LoopImagePager extends RelativeLayout implements NestedScrollingChi
         void onItemClickd(LoopImagePager view, ImageView imageView, int Position);
     }
 
-
     @Override
     protected void onDetachedFromWindow(){
         super.onDetachedFromWindow();

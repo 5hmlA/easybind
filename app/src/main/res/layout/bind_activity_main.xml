@@ -16,9 +16,10 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                <android.support.v7.widget.Toolbar
+                <jzy.easybind.bindstar.JToolbar
                     android:id="@+id/toolbar"
                     android:fitsSystemWindows="true"
+                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize" />
             </android.support.design.widget.AppBarLayout>

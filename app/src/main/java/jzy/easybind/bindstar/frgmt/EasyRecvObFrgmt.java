@@ -1,5 +1,7 @@
 package jzy.easybind.bindstar.frgmt;
 
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,10 +22,12 @@ public class EasyRecvObFrgmt extends Fragment {
     private static final String TAG = "BindingRecyclerView";
     private PageObRecvViewModel viewModel;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         viewModel = new PageObRecvViewModel();
+
     }
 
     @Nullable

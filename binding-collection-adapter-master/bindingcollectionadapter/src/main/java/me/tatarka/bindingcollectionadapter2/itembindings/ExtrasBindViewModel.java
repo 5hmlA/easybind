@@ -1,10 +1,10 @@
 package me.tatarka.bindingcollectionadapter2.itembindings;
 
-import android.databinding.BaseObservable;
 import android.util.SparseArray;
 
 import java.lang.ref.WeakReference;
 
+import me.tatarka.bindingcollectionadapter2.BaseObservableViewModel;
 import me.tatarka.bindingcollectionadapter2.collections.IRecvDataDiff;
 
 /**
@@ -13,7 +13,7 @@ import me.tatarka.bindingcollectionadapter2.collections.IRecvDataDiff;
  * 为每个item绑定一些额外的监听事件<br>
  *     直接可以操作布局变更
  */
-public abstract  class ExtrasBindViewModel extends BaseObservable implements IRecvDataDiff {
+public abstract  class ExtrasBindViewModel extends BaseObservableViewModel implements IRecvDataDiff {
 
     public SparseArray<WeakReference<Object>> extraBindings = new SparseArray<>();
 

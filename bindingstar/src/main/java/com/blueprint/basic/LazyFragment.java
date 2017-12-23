@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import java.lang.reflect.Field;
+
 /**
  * @author 江祖赟.
  * @date 2017/6/9
@@ -50,6 +52,21 @@ public abstract class LazyFragment extends Fragment {
             firstUserVisibile();
         }
 
+    }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        // for bug ---> java.lang.IllegalStateException: Activity has been destroyed
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+        }catch(NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }catch(IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

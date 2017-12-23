@@ -42,7 +42,7 @@ import io.reactivex.functions.Predicate;
 
 import static com.blueprint.LibApp.findColor;
 import static com.blueprint.LibApp.findDimens;
-import static yun.yalantis.ucrop.util.BitmapLoadUtils.calculateInSampleSize;
+import static com.blueprint.helper.BitmapHelper.calculateInSampleSize;
 
 /**
  * @another 江祖赟

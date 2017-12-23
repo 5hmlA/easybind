@@ -36,10 +36,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.blueprint.R;
-import com.blueprint.adapter.decoration.JLinearLayoutManager;
 import com.blueprint.crash.CrashWrapper;
 
 import java.util.ArrayList;
+
+import me.tatarka.bindingcollectionadapter2.recv.JLinearLayoutManager;
 
 
 /**

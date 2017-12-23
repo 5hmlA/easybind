@@ -52,20 +52,20 @@ public class PageRecvViewModel extends LoadMoreViewModel {
 
         }
 
-        Observable.just(1).delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new io.reactivex.functions.Consumer<Integer>() {
+        collectDisposables(Observable.just(1).delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new io.reactivex.functions.Consumer<Integer>() {
             @Override
             public void accept(Integer jObservableList) throws Exception{
                 if(isFirstPage()) {
                     refreshedAllData(newData, true);
                 }else {
                     if(new Random().nextBoolean()) {
-                        addMoreData(newData, mDataLists.size()<30,"自定义提示信息");
+                        addMoreData(newData, mDataLists.size()<30, "自定义提示信息");
                     }else {
                         showPageStateError(PageDiffState.PAGE_STATE_ERROR);
                     }
                 }
             }
-        });
+        }));
     }
 
 
@@ -98,4 +98,5 @@ public class PageRecvViewModel extends LoadMoreViewModel {
             mDataLists.remove(mDataLists.size()-1);
         }
     }
+
 }

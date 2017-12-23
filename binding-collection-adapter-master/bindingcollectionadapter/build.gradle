@@ -17,7 +17,10 @@ android {
 }
 
 dependencies {
-    implementation deps.support.recyclerview
+    compileOnly deps.support.recyclerview
+    compileOnly deps.lifecycle.runtime
+    compileOnly deps.lifecycle.extensions
+    annotationProcessor deps.lifecycle.compiler
 }
 
 //apply from: '../publish.gradle'

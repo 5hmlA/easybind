@@ -61,11 +61,6 @@ public class JBasicWebViewAt extends JBaseTitleStateActivity {
 
     }
 
-    @Override
-    public void onRefresh(){
-        mWebView.loadUrl(mUrl);
-    }
-
     /**
      * 需要加载的Url<br/>
      * assert中的文件：file:///android_asset/about.htm<br/>
@@ -111,7 +106,6 @@ public class JBasicWebViewAt extends JBaseTitleStateActivity {
             super.onPageFinished(view, url);
 
             onPageLoadFinished(view, url);
-            mMultiStateLayout.showStateSucceed();
         }
 
         //        shouldOverrideUrlLoading(WebView view, String url)  最常用的，比如上面的。
@@ -162,9 +156,7 @@ public class JBasicWebViewAt extends JBaseTitleStateActivity {
                 loadStart();
             }else if(newProgress>98) {
                 mProgressBar.setVisibility(View.GONE);
-                mMultiStateLayout.showStateSucceed();
             }else {
-                mMultiStateLayout.showStateLoading();
                 mProgressBar.setVisibility(View.VISIBLE);
             }
         }
@@ -174,7 +166,7 @@ public class JBasicWebViewAt extends JBaseTitleStateActivity {
         //        //因此建议当触发onReceiveError时，不要使用获取到的title
         @Override
         public void onReceivedTitle(WebView view, String title){
-            mTitleBar.setTitle(title);
+            mJToolbar.setTitle(title);
         }
         //
         //        @Override

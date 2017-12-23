@@ -96,10 +96,6 @@ public class JWebViewFragment extends JBaseTitleStateFrgmt {
         }
     }
 
-    @Override
-    public void onRefresh(){
-        mWebView.loadUrl(getLoadUrl());
-    }
 
     //WebViewClient就是帮助WebView处理各种通知、请求事件的。
     class MyWebViewClient extends WebViewClient {

@@ -1,10 +1,13 @@
 package jzy.easybindpagelist.statehelper;
 
+import android.databinding.Observable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import jonas.jlayout.MultiStateLayout;
 import jonas.jlayout.OnStateClickListener;
 import jzy.easybindpagelist.ScrollChildSwipeRefreshLayout;
@@ -19,7 +22,7 @@ import static me.tatarka.bindingcollectionadapter2.Utils.LOG;
  * 带有 泛型 不能在 databinding里面 作为变量 引用
  */
 public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel implements OnStateClickListener, View.OnLayoutChangeListener {
-
+    protected CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     public CharSequence pageStateMsg;
     public ObservableInt pageState = new ObservableInt(MultiStateLayout.LayoutState.STATE_LOADING);
     public ObservableInt pageLoadingRes = new ObservableInt(STATE_UNMODIFY);
@@ -28,6 +31,7 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
     public ObservableInt pageLoadingColorInt = new ObservableInt(STATE_UNMODIFY);
     protected Object mOrignParam;
     protected ScrollChildSwipeRefreshLayout mSwipeRefreshLayout;
+
     /**
      * 显示 SwipeRefreshLayout 刷新状态
      */
@@ -37,6 +41,22 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
     {
         //构造代码块    执行顺序 父类--子类
         customMultiStateLayoutRes();
+        pageState.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable observable, int i){
+                //todo loading界面显示的时候 不允许下拉刷新
+            }
+        });
+    }
+
+    protected void collectDisposables(Disposable disposable){
+        mCompositeDisposable.add(disposable);
+    }
+
+    protected void clearDisposables(){
+        LOG("before-clearDisposables()-: "+mCompositeDisposable.size());
+        mCompositeDisposable.clear();
+        LOG("after-clearDisposables()-: "+mCompositeDisposable.size());
     }
 
     /**
@@ -169,5 +189,10 @@ public abstract class StateDiffViewModel<SD> extends ExtrasBindViewModel impleme
 
     public void enableSwipeRefreshLayout(boolean enable){
         enableSwipeRefresh.set(enable);
+    }
+
+    @Override
+    protected void onCleared(){
+        clearDisposables();
     }
 }

@@ -1,7 +1,6 @@
 package com.blueprint.basic.frgmt;
 
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -12,23 +11,15 @@ import android.widget.RelativeLayout;
 import com.blueprint.Consistent;
 import com.blueprint.R;
 import com.blueprint.basic.JBasePresenter;
-import com.blueprint.basic.JBaseView;
 import com.blueprint.widget.JTitleBar;
-import com.jakewharton.rxbinding2.view.RxView;
 
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import jonas.jlayout.MultiStateLayout;
-import jonas.jlayout.OnStateClickListener;
 
 import static com.blueprint.Consistent.ErrorCode.ERROR_EMPTY;
 import static com.blueprint.Consistent.PageState.STATE_DATA_EMPTY;
 import static com.blueprint.Consistent.PageState.STATE_DATA_ERROR;
 import static com.blueprint.Consistent.PageState.STATE_DATA_SUCCESS;
 import static com.blueprint.Consistent.PageState.STATE_FIRST_LOAD;
-import static com.blueprint.LibApp.setTextView;
 import static com.blueprint.helper.LogHelper.Log_e;
 
 /**
@@ -37,7 +28,7 @@ import static com.blueprint.helper.LogHelper.Log_e;
  * @des [标题+状态界面  有统一处理 basePresenter的subscribe和unsubscribe]
  * onCreate中获取 getArguments数据
  */
-public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements OnStateClickListener, SwipeRefreshLayout.OnRefreshListener, JBaseView<SD> {
+public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment{
     public MultiStateLayout mMultiStateLayout;
     public JTitleBar mTitleBar;
     public JBasePresenter mBasePresenter;
@@ -60,14 +51,12 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
             rootView = inflater.inflate(R.layout.jbasic_title_state_swipe_layout, null);
             mSwipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.jbase_swipe);
             mTitleBar = (JTitleBar)rootView.findViewById(R.id.jbase_titlebar);
-            initSwipeLayout();
             mMultiStateLayout = (MultiStateLayout)rootView.findViewById(R.id.jbase_state_container);
         }else {
             rootView = inflater.inflate(R.layout.jbasic_title_state_layout, null);
             mTitleBar = (JTitleBar)rootView.findViewById(R.id.jbase_titlebar);
             mMultiStateLayout = (MultiStateLayout)rootView.findViewById(R.id.jbase_state_container);
         }
-        mMultiStateLayout.setOnStateClickListener(this);
         if(requestNoTitleBar()) {
             mTitleBar.setVisibility(View.GONE);
         }else {
@@ -78,7 +67,6 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
             }
         }
         onCreateContent(inflater, mMultiStateLayout);
-        try2findCustomSwipeRefreshLayout(rootView);
         //默认一定有下拉刷新，，最后开放方法  关闭下拉刷新
         return rootView;
     }
@@ -103,25 +91,6 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
     }
 
     /**
-     * 寻找自定义布局中的下拉刷新 id固定
-     *
-     * @param rootView
-     */
-    private void try2findCustomSwipeRefreshLayout(View rootView){
-        if(!forceNoSwipeRefresh() && mSwipeRefreshLayout == null) {
-            mSwipeRefreshLayout = rootView.findViewById(R.id.jbase_swipe);
-            if(mSwipeRefreshLayout != null) {
-                initSwipeLayout();
-            }
-        }
-    }
-
-    protected void configCustomSwipeRefreshLayout(View root, @IdRes int srlId){
-        mSwipeRefreshLayout = root.findViewById(srlId);
-        initSwipeLayout();
-    }
-
-    /**
      * 默认开启下拉刷新 ，强制关闭下拉刷新，不要复写 onCreateView()
      *
      * @return
@@ -141,7 +110,6 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
 
     protected void initTitlebar(){
         //标题内容
-        setTextView(mTitleBar.getTitleTextView(), setTitle());
         int titleColor = setTitleBarColor();
         if(titleColor != Consistent.DEFAULTERROR) {
             mTitleBar.getTitleTextView().setTextColor(titleColor);
@@ -164,11 +132,6 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
         setClicks();
     }
 
-    protected void initSwipeLayout(){
-        mSwipeRefreshLayout.setEnabled(true);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-    }
-
     /**
      * 支持多状态必然需要联网，默认支持下拉刷新
      *
@@ -188,21 +151,6 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
     }
 
     private void setClicks(){
-        //左边的点击事件
-        collectDisposables(RxView.clicks(mTitleBar.getLeftIcon()).throttleFirst(1, TimeUnit.SECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object aVoid) throws Exception{
-                        doOnTBleftClick();
-                    }
-                }));
-        collectDisposables(RxView.clicks(mTitleBar.getRightIcon()).throttleFirst(1, TimeUnit.SECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object aVoid) throws Exception{
-                        doOnTBrightClick();
-                    }
-                }));
     }
 
     protected void doOnTBrightClick(){
@@ -213,26 +161,6 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
         if(getActivity() != null) {
             getActivity().onBackPressed();
         }
-    }
-
-    protected CharSequence setErrorRetryMsg(){
-        return null;
-    }
-
-    protected CharSequence setEmptRetryMsg(){
-        return null;
-    }
-
-    protected String setErrorMsg(){
-        return "";
-    }
-
-    protected String setEmptMsg(){
-        return "";
-    }
-
-    protected String setTitle(){
-        return null;
     }
 
     @Override
@@ -263,41 +191,11 @@ public abstract class JBaseTitleStateFrgmt<SD> extends JBaseFragment implements 
     protected abstract void onCreateContent(LayoutInflater inflater, RelativeLayout container);
 
     @Override
-    public void onRetry(@MultiStateLayout.LayoutState int layoutState){
-        toSubscribeData(null);
-    }
-
-    @Override
-    public void onLoadingCancel(){
-
-    }
-
-    @Override
-    public void onRefresh(){
-        toSubscribeData(null);
-    }
-
-    @Override
     public void onDestroy(){
         super.onDestroy();
         if(mBasePresenter != null) {
             mBasePresenter.unsubscribe();
         }
-    }
-
-    @Override
-    public void showLoading(){
-        mMultiStateLayout.showStateLoading();
-    }
-
-    @Override
-    public void showError(Consistent.ErrorData error){
-        showError(error.errorCode);
-    }
-
-    @Override
-    public void showSucceed(SD data){
-        hideLoading();
     }
 
     public void hideLoading(){

@@ -5,11 +5,19 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
+//    protected CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+//    protected void collectDisposables(Disposable disposable){
+//        mCompositeDisposable.add(disposable);
+//    }
+//
+//    protected void clearDisposables(){
+//        LogHelper.Log_d("before-clearDisposables()-: "+mCompositeDisposable.size());
+//        mCompositeDisposable.clear();
+//        LogHelper.Log_d("after-clearDisposables()-: "+mCompositeDisposable.size());
+//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

@@ -2,9 +2,9 @@ package com.blueprint.rx;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.databinding.ObservableInt;
 import android.support.annotation.NonNull;
 
-import com.blueprint.basic.JBaseView;
 import com.blueprint.helper.DialogHelper;
 
 import org.reactivestreams.Publisher;
@@ -25,6 +25,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import jonas.jlayout.MultiStateLayout;
 
 /**
  * @author 江祖赟.
@@ -48,8 +49,8 @@ public class RxUtill {
         };
     }
 
-    public static <T> FlowableTransformer<T,T> defaultSchedulers_flow(final JBaseView baseView){
-        final WeakReference<JBaseView> jBaseViewWeakReference = new WeakReference<>(baseView);
+    public static <T> FlowableTransformer<T,T> defaultSchedulers_flow(final ObservableInt baseView){
+        final WeakReference<ObservableInt> jBaseViewWeakReference = new WeakReference<>(baseView);
         return new FlowableTransformer<T,T>() {
             @Override
             public Publisher<T> apply(@NonNull Flowable<T> upstream){
@@ -61,7 +62,7 @@ public class RxUtill {
                             public void accept(
                                     @io.reactivex.annotations.NonNull Subscription subscription) throws Exception{
                                 if(jBaseViewWeakReference.get() != null) {
-                                    jBaseViewWeakReference.get().showLoading();
+                                    jBaseViewWeakReference.get().set(MultiStateLayout.LayoutState.STATE_LOADING);
                                 }
                             }
                         });
@@ -114,11 +115,11 @@ public class RxUtill {
         };
     }
 
-    public static <T> ObservableTransformer<T,T> defaultSchedulers_obser(final JBaseView baseView){
+    public static <T> ObservableTransformer<T,T> defaultSchedulers_obser(final ObservableInt baseView){
         return defaultSchedulers_obser2(new WeakReference<>(baseView));
     }
 
-    public static <T> ObservableTransformer<T,T> defaultSchedulers_obser2(final WeakReference<JBaseView> jBaseViewWeakReference){
+    public static <T> ObservableTransformer<T,T> defaultSchedulers_obser2(final WeakReference<ObservableInt> jBaseViewWeakReference){
         return new ObservableTransformer<T,T>() {
             @Override
             public ObservableSource<T> apply(@io.reactivex.annotations.NonNull Observable<T> upstream){
@@ -127,7 +128,7 @@ public class RxUtill {
                             @Override
                             public void accept(@NonNull Disposable disposable) throws Exception{
                                 if(jBaseViewWeakReference.get() != null) {
-                                    jBaseViewWeakReference.get().showLoading();
+                                    jBaseViewWeakReference.get().set(MultiStateLayout.LayoutState.STATE_LOADING);
                                 }
                             }
                         });
@@ -147,8 +148,8 @@ public class RxUtill {
         };
     }
 
-    public static <T> SingleTransformer<T,T> defaultSchedulers_single(final JBaseView baseView){
-        final WeakReference<JBaseView> jBaseViewWeakReference = new WeakReference<>(baseView);
+    public static <T> SingleTransformer<T,T> defaultSchedulers_single(final ObservableInt baseView){
+        final WeakReference<ObservableInt> jBaseViewWeakReference = new WeakReference<>(baseView);
         return new SingleTransformer<T,T>() {
             @Override
             public SingleSource<T> apply(@NonNull Single<T> upstream){
@@ -157,7 +158,7 @@ public class RxUtill {
                             @Override
                             public void accept(@NonNull Disposable disposable) throws Exception{
                                 if(jBaseViewWeakReference.get() != null) {
-                                    jBaseViewWeakReference.get().showLoading();
+                                    jBaseViewWeakReference.get().set(MultiStateLayout.LayoutState.STATE_LOADING);
                                 }
                             }
                         });

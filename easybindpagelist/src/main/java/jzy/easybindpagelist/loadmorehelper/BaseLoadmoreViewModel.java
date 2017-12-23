@@ -97,6 +97,7 @@ public abstract class BaseLoadmoreViewModel<ID> extends StateDiffViewModel<List<
 
     /**
      * 不同的layoutmanager复写该方法即可
+     *
      * @return
      */
     public LayoutManagers.LayoutManagerFactory layoutManager(){
@@ -117,8 +118,10 @@ public abstract class BaseLoadmoreViewModel<ID> extends StateDiffViewModel<List<
     }
 
     /**
+     * <a href="https://developer.android.com/topic/libraries/architecture/viewmodel.html"><b> Caution: A ViewModel must never reference a view, Lifecycle, or any class that may hold a reference to the activity context.</b></a>
+     *
      * @param v
-     *         主要用来 获取布局中的控件对象
+     *         主要用来 获取布局中的控件对象<br>
      */
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom){
@@ -263,6 +266,7 @@ public abstract class BaseLoadmoreViewModel<ID> extends StateDiffViewModel<List<
 
     /**
      * 只有在 newData的元素是{@link IRecvDataDiff}的子类时 detectMoves 才有效
+     *
      * @param newData
      * @param detectMoves
      */
@@ -275,10 +279,10 @@ public abstract class BaseLoadmoreViewModel<ID> extends StateDiffViewModel<List<
             mDataLists.clear();
             mDataLists.addAll(newData);
             //ID不一定是 IRecvDataDiff 的子类
-//            if(!mDiffObservableList.set(mDataLists).detectMoves(detectMoves).update(newData)) {
-//                mDataLists.clear();
-//                mDataLists.addAll(newData);
-//            }
+            //            if(!mDiffObservableList.set(mDataLists).detectMoves(detectMoves).update(newData)) {
+            //                mDataLists.clear();
+            //                mDataLists.addAll(newData);
+            //            }
         }
         hideLoading();
     }

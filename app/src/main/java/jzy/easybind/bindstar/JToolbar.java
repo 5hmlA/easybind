@@ -1,4 +1,4 @@
-package com.blueprint.widget;
+package jzy.easybind.bindstar;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -10,21 +10,13 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blueprint.helper.interf.DoubleClickAble;
-import com.blueprint.helper.interf.JSimpleOnGestureListener;
-import com.blueprint.rx.ViewDoubleClickObservable;
-
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
+import jzy.easybind.R;
 
 /**
  * @author 江祖赟.
@@ -40,12 +32,10 @@ import io.reactivex.Observable;
  * android:text="测试"
  * ======================================
  */
-public class JToolbar extends Toolbar implements DoubleClickAble, GestureDetector.OnDoubleTapListener {
+public class JToolbar extends Toolbar {
 
-    private static final int[] ATTRS = new int[]{android.R.attr.textSize, android.R.attr.textColor, android.R.attr.fitsSystemWindows};
-    private GestureDetector mGestureDetector;
-    @Nullable private OnClickListener mClickListener;
-    private DoubleClickAble.OnDoubleClickListener mDoubleClickListener;
+    private static final int[] ATTRS = new int[]{android.R.attr.gravity, android.R.attr.fitsSystemWindows};
+    private int mGravity = Gravity.START;
     private int mSubtitleTextAppearance;
     private int mTitleTextAppearance;
     private boolean mIsTitleCenter = true;
@@ -56,10 +46,6 @@ public class JToolbar extends Toolbar implements DoubleClickAble, GestureDetecto
     private int mTitleOrignLeft;
     private ImageView mRightIconView;
     private int mRightViewRightPadint = dp2px(16);
-
-    public JToolbar(Context context){
-        super(context);
-    }
 
     public JToolbar(Context context, @Nullable AttributeSet attrs){
         super(context, attrs);
@@ -75,20 +61,13 @@ public class JToolbar extends Toolbar implements DoubleClickAble, GestureDetecto
     }
 
     private void wrapperAttrs(Context context, AttributeSet attrs){
-        TypedArray a = context.obtainStyledAttributes(attrs, android.support.v7.appcompat.R.styleable.Toolbar, android.support.v7.appcompat.R.attr.toolbarStyle, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Toolbar, android.support.v7.appcompat.R.attr.toolbarStyle, 0);
         mTitleTextAppearance = a.getResourceId(android.support.v7.appcompat.R.styleable.Toolbar_titleTextAppearance, 0);
         mSubtitleTextAppearance = a.getResourceId(android.support.v7.appcompat.R.styleable.Toolbar_subtitleTextAppearance, 0);
         a.recycle();
         TypedArray sa1 = context.obtainStyledAttributes(attrs, ATTRS);
         mIsTitleCenter = ( a.getInt(0, Gravity.START)&Gravity.CENTER ) == Gravity.CENTER;
         sa1.recycle();
-    }
-
-    @Override
-    protected void onFinishInflate(){
-        super.onFinishInflate();
-        mGestureDetector = new GestureDetector(getContext(), new JSimpleOnGestureListener());
-        mGestureDetector.setOnDoubleTapListener(this);
     }
 
     @Override
@@ -127,72 +106,6 @@ public class JToolbar extends Toolbar implements DoubleClickAble, GestureDetecto
             ( (Toolbar.LayoutParams)mTitleTextView.getLayoutParams() ).rightMargin = righMargin;
             ( (LayoutParams)mTitleTextView.getLayoutParams() ).leftMargin = Math.max(0, righMargin-mTitleOrignLeft);
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        if(mGestureDetector != null) {
-            //GestureDetector导致系统的点击事件失效
-            return mGestureDetector.onTouchEvent(event);
-        }else {
-            return super.onTouchEvent(event);
-        }
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e){
-        if(mClickListener != null) {
-            mClickListener.onClick(this);
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e){
-        if(mDoubleClickListener != null) {
-            mDoubleClickListener.onDoubleClicked(this);
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e){
-        return false;
-    }
-
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l){
-        super.setOnClickListener(l);
-        mGestureDetector = null;
-    }
-
-    /**
-     * 使用GestureDetector的onSingleTapConfirmed作为点击事件
-     *
-     * @param l
-     */
-    public void setOnClickListener2(@Nullable OnClickListener l){
-        mClickListener = l;
-    }
-
-    public void setOnDoubleClickListener(DoubleClickAble.OnDoubleClickListener dl){
-        mDoubleClickListener = dl;
-    }
-
-    @Override
-    protected void onDetachedFromWindow(){
-        super.onDetachedFromWindow();
-        if(null != mGestureDetector) {
-            mGestureDetector.setOnDoubleTapListener(null);
-        }
-    }
-
-    public Observable rxDoubleClick(){
-        return new ViewDoubleClickObservable(this).throttleFirst(1, TimeUnit.SECONDS);
     }
 
     public static int getStatusBarHeight(){
@@ -280,8 +193,7 @@ public class JToolbar extends Toolbar implements DoubleClickAble, GestureDetecto
             if(iconId != 0) {
                 if(mRightIconView == null) {
                     final Context context = getContext();
-//                    mRightIconView = new ImageView(context);
-                    mRightIconView = new JDimImageView(context);
+                    mRightIconView = new ImageView(context);
                     mRightIconView.setPadding(1, 0, mRightViewRightPadint, 0);
                 }
                 if(mRightIconView.getParent() != this) {

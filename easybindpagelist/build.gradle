@@ -23,8 +23,12 @@ android {
 }
 
 dependencies {
-    implementation deps.support.recyclerview
-    implementation deps.jstatelayout
+    compileOnly deps.support.recyclerview
+    compileOnly deps.jstatelayout
+    compileOnly deps.lifecycle.runtime
+    compileOnly deps.lifecycle.extensions
+    compileOnly deps.rxjava2
+    annotationProcessor deps.lifecycle.compiler
 //    implementation 'com.yun.ospl:bindingcollectionadapter:1.0.1'
     implementation project(':bindingcollectionadapter')
 }

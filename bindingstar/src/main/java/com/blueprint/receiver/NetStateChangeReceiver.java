@@ -35,10 +35,12 @@ public class NetStateChangeReceiver extends BroadcastReceiver {
             if(!NetHelper.isWifionnected()) {
                 if(currentWifi) {
                     currentWifi = false;
+//                    切换到手机流量
                     RxBus.getInstance().post(new NetStateEvent());
                 }
             }else {
                 if(!currentWifi) {
+//                    切换到wifi
                     currentWifi = NetHelper.isWifionnected();
                 }
             }
